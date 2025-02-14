@@ -1,0 +1,47 @@
+// mixins
+@import "./mixins.scss";
+
+// variables
+@import "./variables.scss";
+
+//register
+@import "../components/register/register.scss";
+
+//Log in
+@import "../components/logIn/logIn.scss";
+
+//Loader
+@import "../utils-component/loader/loader.scss";
+
+//header
+@import "../utils-component/header/header.scss";
+
+//footer
+@import "../utils-component/footer/footer.scss";
+
+//admin page
+@import "../other-component/admin/adminPage.scss";
+
+//store page
+@import "../other-component/store/storePage.scss";
+
+//toast
+@import "../utils-component/toast/toast.scss";
+
+//popupAlert
+@import "../utils-component/popupAlert/popupAlert.scss";
+
+//homepage
+@import "../components/home-page/homePage.scss";
+
+//cardProduct
+@import "../utils-component/card-product/cardProduct.scss";
+
+//ProductDetail
+@import "../components/product-detail/productDetail.scss";
+
+//Grid
+@import "../utils-component/grid/grid.scss";
+
+//Cart
+@import "../components/cart/cart.scss";

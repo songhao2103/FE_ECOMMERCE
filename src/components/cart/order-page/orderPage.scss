@@ -1,0 +1,143 @@
+.order_page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+
+    .btn_dark_pink {
+      @include btn-dark-pink;
+      padding: 5px 15px;
+    }
+
+    .title_36 {
+      @include title-36;
+    }
+  }
+
+  .title_20 {
+    @include title-20;
+  }
+
+  .desc {
+    @include desc-black;
+  }
+
+  .orders_list {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+
+    .box_order {
+      width: 70%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      padding: 20px;
+
+      .product_item {
+        display: flex;
+        justify-content: space-between;
+        height: 120px;
+        align-items: center;
+
+        .box_image {
+          height: 100%;
+          width: 15%;
+          // background-color: rebeccapurple;
+
+          img {
+            height: 90%;
+          }
+        }
+
+        .title_20 {
+          width: 40%;
+          // background-color: red;
+        }
+
+        .price {
+          width: 20%;
+        }
+
+        .quantity {
+          width: 20%;
+        }
+      }
+
+      .box_bottom {
+        border-top: 1px solid #ccc;
+        display: flex;
+        justify-content: end;
+        padding-top: 20px;
+
+        .bottom {
+          width: 45%;
+          display: flex;
+          flex-direction: column;
+          gap: 30px;
+
+          .item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+        }
+      }
+    }
+  }
+
+  .box_place_order {
+    width: 70%;
+    max-width: 900px;
+    display: flex;
+    justify-content: end;
+    margin-top: 30px;
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 50%;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      padding: 20px;
+
+      .box_payment {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 15px;
+
+        select {
+          // border: none;
+          border-color: #ccc;
+          outline: none;
+          width: 200px;
+          padding: 5px 10px;
+        }
+      }
+
+      .item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .btn_dark_pink {
+        @include btn-dark-pink;
+        margin-top: 10px;
+      }
+    }
+  }
+}

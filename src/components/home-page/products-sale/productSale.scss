@@ -1,0 +1,96 @@
+.product_sale {
+  margin-top: 50px;
+
+  .desc {
+    @include desc-black;
+  }
+
+  .header_section {
+    display: flex;
+    align-items: flex-end;
+    position: relative;
+
+    .time_sale {
+      display: flex;
+      gap: 15px;
+      margin-left: 70px;
+
+      .item {
+        .desc {
+          font-weight: 600;
+
+          &:last-child {
+            font-size: 4rem;
+          }
+        }
+      }
+
+      .dots {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 45px;
+
+        .dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background-color: $dark-pink;
+        }
+      }
+    }
+
+    .box_button {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      float: inline-end;
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+
+      .icon {
+        font-size: 2rem;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+
+        &:hover {
+          background-color: $dark-pink;
+          color: $white;
+        }
+      }
+
+      .icon.no_drop {
+        cursor: no-drop;
+        color: $dark-gray;
+
+        &:hover {
+          background-color: $white;
+          color: $dark-gray;
+        }
+      }
+    }
+  }
+
+  .box_list_product_sale {
+    margin-top: 30px;
+    overflow: hidden;
+
+    .list_product_sale {
+      display: flex;
+      width: 100%;
+      gap: 1.33333%;
+      transition: 0.4s ease;
+
+      .card_product {
+        width: 24%;
+        flex-shrink: 0;
+      }
+    }
+  }
+}

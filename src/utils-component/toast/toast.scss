@@ -1,0 +1,25 @@
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  //   width: 300px;
+  background-color: pink;
+  height: 60px;
+  position: fixed;
+  z-index: 1000;
+  padding: 0 30px;
+  border-radius: 10px;
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.toast.active {
+  transform: translateX(0);
+  opacity: 1;
+
+  .icon {
+    font-size: 2rem;
+    color: #059700;
+  }
+}

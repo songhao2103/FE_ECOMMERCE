@@ -1,0 +1,79 @@
+@import "./add-product/addProduct.scss";
+
+.store_page {
+  .nav_bar_store_page {
+    display: flex;
+    position: relative;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+
+    .desc {
+      @include desc-black;
+    }
+
+    .title_24 {
+      @include title-24;
+    }
+
+    #options_store_page {
+      display: none;
+    }
+
+    .icon {
+      i {
+        font-size: 2.4rem;
+      }
+
+      &:hover {
+        color: $dark-pink;
+        cursor: pointer;
+      }
+    }
+
+    .options {
+      //   background-color: rebeccapurple;
+      padding: 15px 30px 15px 15px;
+      position: absolute;
+      top: 30px;
+      transform: translateX(-100%);
+      opacity: 0;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      pointer-events: none; /* Ngăn chặn các sự kiện */
+      background-color: #fff;
+      border-radius: 10px;
+      z-index: 100;
+      border: 1px solid #ccc;
+
+      .item {
+        cursor: pointer;
+
+        &:hover {
+          color: $dark-pink;
+        }
+      }
+    }
+
+    .layout_options_page {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      display: none;
+      z-index: 99;
+    }
+
+    #options_store_page {
+      &:checked ~ .options {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto; /* Bật lại các sự kiện khi hiển thị */
+      }
+
+      &:checked ~ .layout_options_page {
+        display: block;
+      }
+    }
+  }
+}

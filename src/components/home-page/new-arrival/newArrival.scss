@@ -1,0 +1,118 @@
+.new_arrival {
+  margin-top: 100px;
+
+  .list-products-featured {
+    display: grid;
+    grid-template-columns: 23% 23% 23% 23%;
+    grid-template-rows: 1fr 1fr;
+    margin-top: 50px;
+    //   background-color: rebeccapurple;
+    gap: 2.66666%;
+
+    .animate-element {
+      display: flex;
+      align-items: center;
+      position: relative;
+      background: rgb(0, 0, 0);
+      background: linear-gradient(
+        265deg,
+        rgba(0, 0, 0, 1) 7%,
+        rgb(34, 34, 34) 52%,
+        rgba(0, 0, 0, 1) 94%
+      );
+      transition: transform 0.8s ease-in-out, opacity 0.8s;
+      opacity: 0;
+
+      img {
+        width: 100%;
+      }
+
+      .content {
+        position: absolute;
+        width: 50%;
+        bottom: 5%;
+        left: 5%;
+
+        .title-24 {
+          @include title-24;
+          color: $white;
+          margin-bottom: 20px;
+        }
+        .desc {
+          @include desc-black;
+          color: $white;
+        }
+
+        .bottom {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          .desc {
+            border-bottom: 2px solid $white;
+            display: inline-flex;
+          }
+
+          .icon {
+            color: $white;
+          }
+        }
+      }
+    }
+
+    .item1 {
+      grid-column: span 2;
+      grid-row: span 2;
+      transform: translateX(-100%);
+    }
+
+    .item2 {
+      grid-column: span 2;
+      grid-row: span 1;
+      transform: translateX(100%);
+
+      img {
+        transform: scaleX(-1);
+      }
+    }
+
+    .item3 {
+      grid-column: 3 / span 1;
+      grid-row: 2 / span 1;
+      transform: translateY(100%);
+      .content {
+        width: 70%;
+      }
+    }
+
+    .item4 {
+      grid-column: 4 / span 1;
+      grid-row: 2 / span 1;
+      transform: translateY(100%);
+      .content {
+        width: 70%;
+      }
+    }
+  }
+
+  .list-products-featured.show {
+    .item1 {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .item2 {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .item3 {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .item4 {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}

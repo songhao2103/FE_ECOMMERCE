@@ -1,0 +1,469 @@
+@import "./popupProductConfirm.scss";
+
+.product_confirm {
+  .desc {
+    @include desc-black;
+  }
+
+  .title_20 {
+    @include title-20;
+  }
+
+  .nav_bar_product_confirm {
+    display: flex;
+    justify-content: space-between;
+
+    .box_option {
+      width: 60%;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+
+      .option {
+        display: flex;
+        gap: 10px;
+        position: relative;
+
+        &:first-child {
+          label {
+            &:first-child {
+              min-width: 70px;
+            }
+          }
+        }
+
+        &:last-child {
+          label {
+            &:first-child {
+              min-width: 120px;
+            }
+          }
+        }
+
+        .desc:first-child {
+          cursor: pointer;
+
+          &:hover {
+            color: $dark-pink;
+          }
+        }
+
+        span {
+          font-weight: 900;
+        }
+
+        .select {
+          background-color: $white;
+          padding: 5px 20px 5px 10px;
+          border: 1px solid #ccc;
+          border-radius: 10px;
+          position: absolute;
+          height: 0;
+          overflow: hidden;
+          padding: 0;
+          border: none;
+          top: 25px;
+          transition: 0.3s ease;
+          z-index: 1000;
+
+          li {
+            cursor: pointer;
+
+            &:hover {
+              color: $dark-pink;
+            }
+          }
+        }
+
+        #selectStore {
+          display: none;
+        }
+
+        .layout {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: none;
+        }
+
+        #selectStore:checked ~ .select_store {
+          padding: 5px 20px 5px 10px;
+          border: 1px solid #ccc;
+          border-radius: 10px;
+          height: auto;
+        }
+
+        #selectStore:checked ~ .layout_store {
+          display: block;
+        }
+
+        #select_device_type {
+          display: none;
+        }
+
+        #select_device_type:checked ~ .select_device_type {
+          padding: 5px 20px 5px 10px;
+          border: 1px solid #ccc;
+          border-radius: 10px;
+          height: auto;
+        }
+
+        #select_device_type:checked ~ .layout_device_type {
+          display: block;
+        }
+
+        .content {
+          display: flex;
+          max-width: 80%;
+          align-items: center;
+          gap: 10px;
+          margin-left: 10px;
+          position: relative;
+          flex-wrap: wrap;
+
+          .select_item {
+            padding: 3px 15px;
+            position: relative;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: pink;
+
+            .delete {
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              background-color: $white;
+              top: 0;
+              left: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 1.4rem;
+              color: rgb(252, 12, 12);
+              display: none;
+              background-color: #58ebcb;
+            }
+
+            &:hover {
+              .delete {
+                display: flex;
+              }
+            }
+          }
+        }
+
+        .box_type {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-left: 20px;
+
+          select {
+            padding: 2px;
+          }
+        }
+      }
+    }
+
+    .box_rigth {
+      display: flex;
+      flex-direction: column;
+      width: 35%;
+      // background-color: pink;
+      gap: 15px;
+
+      .box_sort {
+        display: flex;
+        gap: 30px;
+
+        .sort {
+          display: flex;
+          gap: 10px;
+        }
+      }
+
+      .box_input {
+        display: flex;
+        position: relative;
+
+        input {
+          padding: 7px;
+          width: 100%;
+          border-bottom: 1px solid #ccc;
+
+          &:focus {
+            border-color: $black;
+          }
+        }
+
+        .icon {
+          position: absolute;
+          right: 0;
+          top: 7px;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  .list_products_confirm {
+    margin-top: 30px;
+    border-collapse: collapse;
+    border: 1px solid #ccc;
+    width: 100%;
+
+    td,
+    th {
+      border: 1px solid #ccc;
+    }
+
+    thead {
+      tr {
+        height: 40px;
+      }
+      .image {
+        width: 10%;
+      }
+
+      .name {
+        width: 30%;
+      }
+
+      .store {
+        width: 10%;
+      }
+
+      .quantity {
+        width: 10%;
+      }
+
+      .price {
+        width: 10%;
+      }
+
+      .btn {
+        width: 10%;
+      }
+
+      .input {
+        width: 10%;
+
+        .box_select {
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+
+          span {
+            cursor: pointer;
+
+            &:hover {
+              color: $dark-pink;
+            }
+          }
+        }
+      }
+    }
+
+    td,
+    th {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    tbody {
+      width: 100%;
+      padding: 0;
+      margin: 0;
+
+      .product {
+        width: 100%;
+
+        .image {
+          width: 10%;
+          cursor: pointer;
+          img {
+            width: 100%;
+          }
+        }
+
+        .name {
+          width: 30%;
+          cursor: pointer;
+        }
+
+        .store {
+          width: 10%;
+        }
+
+        .quantity {
+          width: 10%;
+        }
+
+        .price {
+          width: 10%;
+        }
+
+        .btn {
+          width: 10%;
+          .btn_dark_pink {
+            @include btn-dark-pink;
+            padding: 10px 20px;
+          }
+
+          .btn_dark_pink.accep {
+            background-color: #02701a;
+
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+        }
+
+        .input {
+          .box_input_checkbox {
+            padding: 30px;
+          }
+          cursor: pointer;
+          input {
+            transform: scale(1.5);
+          }
+        }
+      }
+    }
+  }
+
+  .pagination_product_confirm {
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    gap: 10px;
+    margin-top: 30px;
+
+    .item {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ccc;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $dark-pink;
+        color: $white;
+        border: none;
+      }
+    }
+
+    .item.active {
+      background-color: $dark-pink;
+      color: $white;
+      border: none;
+    }
+
+    .icon.no_drop {
+      cursor: no-drop;
+      color: #ccc;
+
+      &:hover {
+        background-color: $white;
+      }
+    }
+  }
+
+  .other {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    .btn_dark_pink {
+      @include btn-dark-pink;
+      padding: 10px 20px;
+
+      &:first-child {
+        background-color: $green;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+
+  .popup_refuse_product {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // position: relative;
+
+    .layout_refuse {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: rgba($color: #000000, $alpha: 0.5);
+    }
+
+    .content {
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      padding: 30px;
+      background-color: $white;
+      position: relative;
+
+      textarea {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 10px;
+        margin-top: 10px;
+
+        &:focus {
+          outline: none;
+        }
+      }
+
+      .btn {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+
+        .btn_dark_pink {
+          @include btn-dark-pink;
+          padding: 10px 20px;
+        }
+      }
+
+      .close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 2rem;
+
+        &:hover {
+          background-color: $dark-pink;
+          color: $white;
+        }
+      }
+    }
+  }
+}

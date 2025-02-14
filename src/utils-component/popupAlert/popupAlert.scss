@@ -1,0 +1,53 @@
+.popup_alert {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100000;
+
+  .bgc_popup_alert {
+    width: 100%;
+    height: 100%;
+    background-color: rgba($color: #000000, $alpha: 0.4);
+    position: absolute;
+  }
+  .content {
+    padding: 20px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    border: 1px solid $dark-gray;
+    border-radius: 5px;
+    background-color: $white;
+    max-width: 400px;
+
+    .btn_dark_pink {
+      margin-top: 20px;
+      @include btn-dark-pink;
+      padding: 10px 15px;
+      width: 60px;
+    }
+
+    .desc {
+      @include desc-black;
+      text-align: center;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 2rem;
+
+      &:hover {
+        color: $dark-pink;
+      }
+    }
+  }
+}

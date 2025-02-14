@@ -1,0 +1,40 @@
+.category_home_page {
+  margin-top: 100px;
+  .list_categories {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 30px;
+
+    .desc {
+      @include desc-black;
+    }
+
+    .category {
+      width: 15%;
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 15px;
+      border: 1px solid #ccc;
+      gap: 10px;
+      flex-direction: column;
+      cursor: pointer;
+
+      .icon {
+        font-size: 3.5rem;
+      }
+
+      &:hover {
+        background-color: $dark-pink;
+        border: none;
+
+        .icon,
+        .desc {
+          color: $white;
+        }
+      }
+    }
+  }
+}

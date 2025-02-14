@@ -1,0 +1,29 @@
+@import "./logo/logo.scss";
+
+@import "./nav-bar/navBar.scss";
+
+@import "./box-right/boxRight.scss";
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 50px;
+  position: sticky;
+  top: 0;
+  margin-bottom: 30px;
+  background-color: $white;
+  z-index: 100;
+
+  .logo_of_page {
+    width: 30%;
+  }
+
+  .nav_bar_header {
+    width: 30%;
+  }
+
+  .box_right_header {
+    width: 40%;
+  }
+}

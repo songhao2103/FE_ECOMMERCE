@@ -1,0 +1,39 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-size: 1.6rem;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+}
+
+input:focus {
+  outline: none;
+}
+
+input {
+  border: none;
+}
+
+button {
+  border: none;
+}
+
+/* ============Code chung cho class desc */
+
+.main_content {
+  max-width: 1290px;
+  min-width: 780px;
+  margin: 0 auto;
+  /* background-color: rgb(204, 165, 171); */
+  display: block;
+  padding: 10px;
+}

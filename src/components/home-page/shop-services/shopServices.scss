@@ -1,0 +1,49 @@
+.shop-services {
+  display: flex;
+  align-content: inherit;
+  justify-content: space-between;
+  margin-top: 100px;
+
+  .service {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .bgc-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+
+      .icon {
+        height: 60px;
+        width: 60px;
+        border-radius: 50%;
+        background-color: $black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        color: $white;
+        font-size: 2.8rem;
+      }
+    }
+
+    .content {
+      text-align: center;
+      .title-20 {
+        @include title-20;
+        margin-bottom: 8px;
+      }
+
+      .desc {
+        @include desc-black;
+      }
+    }
+  }
+}

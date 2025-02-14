@@ -1,0 +1,46 @@
+//bannerHomePage
+@import "./banner/bannerHomePage.scss";
+
+//productsSale
+@import "./products-sale/productSale.scss";
+
+//category
+@import "./category/category.scss";
+
+//product_selling
+@import "./best-selling_product/bestSellingProduct.scss";
+
+//new_arrival
+@import "./new-arrival/newArrival.scss";
+
+//shop-services
+@import "./shop-services/shopServices.scss";
+
+//title_section
+.title_section {
+  .desc {
+    @include desc-black;
+    color: $dark-pink;
+    font-weight: 600;
+    position: relative;
+    margin-left: 30px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      height: 40px;
+      width: 20px;
+      border-radius: 5px;
+      background-color: $dark-pink;
+      left: -30px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+  .title_36 {
+    @include title-36;
+    margin-top: 30px;
+    font-weight: 600;
+  }
+}

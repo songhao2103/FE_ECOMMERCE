@@ -1,0 +1,13 @@
+.nav_bar_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .item {
+    @include desc-black;
+  }
+
+  .item.active {
+    text-decoration: underline;
+  }
+}

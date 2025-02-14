@@ -1,0 +1,30 @@
+.product_selling {
+  margin-top: 100px;
+
+  .desc {
+    @include desc-black;
+  }
+
+  .header_section {
+    display: flex;
+    align-items: flex-end;
+    position: relative;
+  }
+
+  .box_list_product_selling {
+    margin-top: 30px;
+    overflow: hidden;
+
+    .list_product_selling {
+      display: flex;
+      width: 100%;
+      gap: 1.33333%;
+      transition: 0.4s ease;
+
+      .card_product {
+        width: 24%;
+        flex-shrink: 0;
+      }
+    }
+  }
+}

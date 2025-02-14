@@ -1,0 +1,64 @@
+.grid_utils {
+  table,
+  th,
+  td {
+    border: 1px solid #ccc;
+  }
+
+  td,
+  th {
+    text-align: center;
+    vertical-align: middle;
+    @include desc-black;
+  }
+
+  td {
+    img {
+      width: 80%;
+    }
+  }
+
+  .desc {
+    @include desc-black;
+  }
+
+  .name {
+    @include title-20;
+    text-align: left;
+  }
+
+  .box_quantity {
+    display: inline-flex;
+    border-radius: 5px;
+
+    .icon {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid $dark-gray;
+      font-size: 1.8rem;
+      cursor: pointer;
+
+      &:hover {
+        color: $white;
+        background-color: $dark-pink;
+        border: none;
+      }
+
+      &:nth-child(1) {
+        border-radius: 5px 0 0 5px;
+      }
+
+      &:nth-child(3) {
+        border-radius: 0 5px 5px 0;
+      }
+    }
+
+    .quantity {
+      width: 35px;
+      border: 1px solid $dark-gray;
+    }
+  }
+}

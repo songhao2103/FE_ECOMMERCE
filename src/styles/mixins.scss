@@ -1,0 +1,73 @@
+@mixin title-20 {
+  color: #000;
+  font-family: Poppins;
+  font-size: 2rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+// title-24px
+@mixin title-24 {
+  color: var(--black, #000);
+  font-family: Inter;
+  font-size: 2.4rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0.72px;
+}
+
+//title-48
+@mixin title-48 {
+  color: var(--black, #000);
+  font-family: Inter;
+  font-size: 4.8rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.25; /* 125% */
+  letter-spacing: 1.92px;
+}
+
+//title-36
+@mixin title-36 {
+  color: var(--black, #000);
+  font-family: Inter;
+  font-size: 3.6rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.33; /* 133.333% */
+  letter-spacing: 1.44px;
+}
+
+@mixin desc-black {
+  color: var(--black, #000);
+  font-family: Poppins;
+  font-size: 1.6rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5; /* 150% */
+}
+
+//btn dark pinkk
+@mixin btn-dark-pink {
+  display: inline-flex;
+  padding: 16px 48px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 4px;
+  background: var(--Button2, #db4444);
+  cursor: pointer;
+
+  @include desc-black;
+  color: $white;
+
+  &:hover {
+    background-color: #e67373;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}

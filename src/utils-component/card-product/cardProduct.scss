@@ -1,0 +1,114 @@
+.card_product {
+  width: 24%;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+
+  .desc {
+    @include desc-black;
+  }
+
+  .box_image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+    cursor: pointer;
+
+    .image {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      img {
+        width: 80%;
+        object-fit: cover;
+      }
+    }
+
+    .sale {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 10px;
+      background-color: $dark-pink;
+      font-size: 1.4rem;
+      border-radius: 5px;
+      color: $white;
+      position: absolute;
+      top: 15px;
+      left: 15px;
+    }
+
+    .icon {
+      font-size: 2rem;
+      position: absolute;
+      top: 15px;
+      right: 15px;
+    }
+
+    .add_to_cart {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      background-color: $black;
+      bottom: -100%;
+      transition: 0.4s ease;
+
+      .desc {
+        color: $white;
+        padding: 10px 0;
+      }
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+
+    &:hover {
+      .add_to_cart {
+        position: absolute;
+        bottom: 0;
+      }
+    }
+  }
+
+  .product_info {
+    margin-top: 15px;
+    padding: 10px;
+
+    .title_20 {
+      @include title-20;
+      height: 60px;
+    }
+
+    .box_price {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 10px;
+
+      .new_price {
+        color: $dark-pink;
+      }
+
+      .old_price {
+        color: $dark-gray;
+        text-decoration: line-through;
+      }
+    }
+
+    .bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 20px;
+
+      .rating {
+        i {
+          color: $dark-pink;
+        }
+      }
+    }
+  }
+}

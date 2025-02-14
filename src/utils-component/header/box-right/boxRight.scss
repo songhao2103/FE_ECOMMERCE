@@ -1,0 +1,135 @@
+.box_right_header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  justify-content: end;
+
+  .desc {
+    @include desc-black;
+  }
+
+  .search {
+    .icon {
+      position: absolute;
+      right: 0px;
+      cursor: pointer;
+      font-size: 2rem;
+
+      &:hover {
+        color: $dark-pink;
+      }
+    }
+  }
+
+  .box_icon {
+    display: flex;
+    gap: 15px;
+
+    .icon {
+      cursor: pointer;
+      font-size: 2rem;
+      color: $black;
+
+      &:hover {
+        color: $dark-pink;
+      }
+    }
+
+    .cart {
+      position: relative;
+
+      .quantity {
+        position: absolute;
+        color: $white;
+        width: 15px;
+        height: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: $dark-pink;
+        border-radius: 50%;
+        font-weight: 600;
+        font-size: 1.2rem;
+        top: -12px;
+        right: -5px;
+      }
+    }
+  }
+
+  .box_account {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    position: relative;
+
+    .avatar {
+      img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+    }
+
+    .option_account {
+      position: absolute;
+      top: 45px;
+      background-color: rgb(198, 178, 218);
+      padding: 10px;
+      right: 0;
+      display: none;
+      width: 150px;
+      border-radius: 10px;
+      z-index: 100;
+
+      .item {
+        cursor: pointer;
+
+        &:hover {
+          color: $dark-pink;
+        }
+      }
+    }
+
+    .layout {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: rgba($color: #000000, $alpha: 0.1);
+      display: none;
+    }
+
+    input {
+      display: none;
+
+      &:checked ~ .option_account {
+        display: block;
+      }
+
+      &:checked ~ .layout {
+        display: block;
+      }
+    }
+  }
+
+  .box_right_log_in {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 15px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+
+    &:hover {
+      border-color: $dark-pink;
+
+      .desc {
+        color: $dark-pink;
+      }
+    }
+  }
+}

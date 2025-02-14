@@ -1,0 +1,39 @@
+.add_store {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+
+  .desc {
+    @include desc-black;
+  }
+
+  form {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #ccc;
+    padding: 20px;
+    border-radius: 20px;
+
+    label {
+      margin-bottom: 5px;
+      margin-top: 20px;
+    }
+
+    input {
+      width: 100%;
+      border-bottom: 1px solid #ccc;
+      padding: 7px 10px;
+
+      &:focus {
+        border-color: $black;
+      }
+    }
+
+    .btn_dark_pink {
+      margin-top: 20px;
+      @include btn-dark-pink;
+    }
+  }
+}

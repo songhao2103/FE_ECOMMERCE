@@ -1,0 +1,88 @@
+.register {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .desc {
+    @include desc-black;
+  }
+
+  .media {
+    width: 60%;
+
+    img {
+      display: none;
+      transform: translateX(-100px);
+    }
+  }
+
+  .form_register {
+    width: 40%;
+
+    .top {
+      margin-bottom: 48px;
+
+      .title_36 {
+        @include title-36;
+        margin-bottom: 20px;
+      }
+    }
+
+    form {
+      width: 100%;
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin: 2px 0 5px;
+        border-bottom: 1px solid #ccc;
+
+        &:focus {
+          border-bottom: 1px solid $black;
+        }
+      }
+
+      .error {
+        margin-bottom: 10px;
+        color: red;
+      }
+
+      .box_input {
+        display: flex;
+        align-items: center;
+        position: relative;
+
+        .box_eye {
+          display: flex;
+          background-color: red;
+          position: absolute;
+          right: 20px;
+          bottom: 40px;
+          cursor: pointer;
+
+          i {
+            position: absolute;
+          }
+        }
+      }
+
+      .btn_dark_pink {
+        @include btn-dark-pink;
+        width: 100%;
+        margin-top: 30px;
+      }
+    }
+
+    .bottom {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 34px;
+      gap: 10px;
+      span:last-child {
+        text-decoration: underline;
+      }
+    }
+  }
+}
