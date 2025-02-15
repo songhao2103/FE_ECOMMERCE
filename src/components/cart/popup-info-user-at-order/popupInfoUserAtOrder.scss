@@ -42,6 +42,10 @@
             width: 100%;
           }
 
+          input.error {
+            border-color: $dark-pink;
+          }
+
           .desc {
             font-size: 1.2rem;
             color: $dark-gray;
@@ -54,6 +58,10 @@
 
           .desc.active {
             display: block;
+          }
+
+          .desc.active.error {
+            color: $dark-pink;
           }
         }
       }
@@ -70,6 +78,10 @@
             width: 100%;
           }
 
+          input.error {
+            border-color: $dark-pink;
+          }
+
           .desc {
             font-size: 1.2rem;
             color: $dark-gray;
@@ -78,6 +90,14 @@
             left: 10px;
             background-color: $white;
             display: none;
+          }
+
+          .desc.active {
+            display: block;
+          }
+
+          .desc.active.error {
+            color: $dark-pink;
           }
         }
 
@@ -110,6 +130,58 @@
             overflow-y: scroll;
             padding: 10px;
             border: 1px solid#ccc;
+          }
+        }
+      }
+
+      .box_input_specific_address {
+        width: 100%;
+        margin-top: 30px;
+        position: relative;
+
+        input {
+          width: 100%;
+          padding: 10px 15px;
+          border: 1px solid #ccc;
+        }
+
+        input.error {
+          border-color: $dark-pink;
+        }
+        .placeholder {
+          position: absolute;
+          font-size: 1.2rem;
+          color: $dark-gray;
+          top: -10px;
+          background-color: $white;
+          left: 10px;
+          display: none;
+        }
+
+        .placeholder.active {
+          display: block;
+        }
+
+        .placeholder.active.error {
+          color: $dark-pink;
+        }
+      }
+
+      .bottom_box_content {
+        margin-top: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        width: 100%;
+        gap: 20px;
+
+        .btn_dark_pink {
+          @include btn-dark-pink;
+          padding: 7px 15px;
+
+          &:nth-child(1) {
+            background-color: #ccc;
+            color: $black;
           }
         }
       }

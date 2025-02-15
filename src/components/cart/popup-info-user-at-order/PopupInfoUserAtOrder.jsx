@@ -1,17 +1,40 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { isValidVietnamPhoneNumber } from "../../../utils/format/format";
 
-const PopupInfoUserAtOrder = ({ userLogged, deliveryAddress }) => {
+//hàm nối chuỗi address
+const connectStringAddress = (objectAddress) => {
+  let newValue = "";
+  Object.values(objectAddress).forEach((item) => {
+    if (!item) {
+      return;
+    }
+
+    if (!newValue) {
+      newValue = item.name;
+    } else {
+      newValue = newValue + ", " + item.name;
+    }
+  });
+
+  return newValue;
+};
+const PopupInfoUserAtOrder = ({
+  userLogged,
+  deliveryAddress,
+  handleTurnPopup,
+  handleUpdateCurrentOrderAddress,
+}) => {
   const [orderAddress, setOrderAddress] = useState({
     userName: userLogged.userName,
     phoneNumber: userLogged.phoneNumber || "",
-    specific: userLogged.address?.specific || "",
+    specificAddress: userLogged.address?.specific || "",
   });
 
   //lưu địa mà người dùng chọn
   const [addressSelect, setAddressSelect] = useState({
     cityOrProvince: { name: userLogged.address?.cityOrProvince || "" },
-    wardOrCommune: { name: userLogged.address?.wardOrCommune || "" },
     district: { name: userLogged.address?.district || "" },
+    wardOrCommune: { name: userLogged.address?.wardOrCommune || "" },
   });
 
   //lưu giá trị của ô input select
@@ -34,6 +57,15 @@ const PopupInfoUserAtOrder = ({ userLogged, deliveryAddress }) => {
     listValue: [],
   });
 
+  const [valueSearch, setValueSearch] = useState("");
+  const clickElement = useRef(null);
+  const [listValueOption, setListValueOption] = useState([]); //lưu danh sách option được hiển thị lên (phục vụ cho việc search)
+  const [errorInput, setErrorInput] = useState({
+    userName: false,
+    phoneNumber: false,
+    specificAddress: false,
+    inputSelect: false,
+  });
   const [listProvinceAndCities, setListProvinceAndCities] = useState([]); //lưu danh sách tỉnh, thành phố ở Việt Nam
   const [listDistricts, setListDistricts] = useState([]); //Lưu danh sách các quận huyện
   const [listWardOrCommune, setListWardOrCommune] = useState([]); //lưu danh sách các phường xã
@@ -55,6 +87,7 @@ const PopupInfoUserAtOrder = ({ userLogged, deliveryAddress }) => {
           ...valueBoxSelect,
           listValue: newListProvinceAndCities.data,
         });
+        setListValueOption(newListProvinceAndCities);
       } catch (error) {
         console.log("error when get data of provinces and cities", error);
       }
@@ -104,11 +137,6 @@ const PopupInfoUserAtOrder = ({ userLogged, deliveryAddress }) => {
     setOrderAddress({ ...orderAddress, [name]: value });
   };
 
-  //hàm xử lý thay đổi giá trị của ô input select
-  const handleChangeInputSelect = (e) => {
-    setValueInputSelect(e.target.value);
-  };
-
   //hàm xử lý khi thay đổi option
   const handleTurnOption = (option) => {
     if (option === "cityOrProvince") {
@@ -155,60 +183,183 @@ const PopupInfoUserAtOrder = ({ userLogged, deliveryAddress }) => {
   //hàm xử lý khi người dùng lựa chọn
   const handleSelectOption = async (value) => {
     if (valueBoxSelect.option === "cityOrProvince") {
-      setAddressSelect({
+      //tạo địa chỉ mới
+      const newAddressSelect = {
         ...addressSelect,
         cityOrProvince: value,
         district: "",
         wardOrCommune: "",
-        changed: true,
-      });
+      };
 
+      //cập nhật lại địa chỉ mới
+      setAddressSelect(newAddressSelect);
+
+      //lấy ra danh sách quận huyện rồi cập nhật để hiển thị
       const listDistrict = await getDistricts(value.id);
       setListDistricts(listDistrict);
+
+      //cập nhật lại danh sách phường xã thành mảng rỗng
+      setListWardOrCommune([]);
+
+      //cập nhật lại box value
       setValueBoxSelect({
         ...valueBoxSelect,
         listValue: listDistrict,
         option: "district",
       });
+
+      const newValue = connectStringAddress(newAddressSelect);
+      setValueInputSelect(newValue);
+      setValueSearch("");
       return;
     }
 
     if (valueBoxSelect.option === "district") {
-      setAddressSelect({
+      //tạo địa chỉ mới
+      const newAddressSelect = {
         ...addressSelect,
         district: value,
         wardOrCommune: "",
-      });
+      };
 
+      //cập nhật lại địa chỉ mới
+      setAddressSelect(newAddressSelect);
+
+      //lấy danh sách phường xã rồi cập nhật lại
       const wardOrCommune = await getWardOrCommune(value.id);
       setListWardOrCommune(listDistricts);
+
+      //cập nhật lại valueBoxSelect
       setValueBoxSelect({
         ...valueBoxSelect,
         listValue: wardOrCommune,
         option: "wardOrCommune",
       });
 
+      const newValue = connectStringAddress(newAddressSelect);
+      setValueInputSelect(newValue);
+      setValueSearch("");
       return;
     }
 
     if (valueBoxSelect.option === "wardOrCommune") {
-      setAddressSelect({
+      //tạo địa chỉ mới
+      const newAddressSelect = {
         ...addressSelect,
         wardOrCommune: value,
-      });
+      };
+
+      //cập nhật địa chỉ
+      setAddressSelect(newAddressSelect);
 
       setValueBoxSelect({
         ...valueBoxSelect,
         option: "cityOrProvince",
         hidden: false,
+        listValue: listProvinceAndCities,
       });
+
+      const newValue = connectStringAddress(newAddressSelect);
+      setValueInputSelect(newValue);
+      setValueSearch("");
+      setErrorInput({ ...errorInput, inputSelect: false });
       return;
     }
   };
 
-  //hàm xử lý khi người dùng
+  //hàm xử lý khi người dùng focus vào ô input select
+  const handleFocusInputSelect = () => {
+    setValueInputSelect("");
+    setValueBoxSelect({ ...valueBoxSelect, hidden: true });
+  };
+
+  //hàm xử lý khi người dùng blur
+  const handleBlurInputSelect = () => {
+    const newValue = connectStringAddress(addressSelect);
+    setValueInputSelect(newValue);
+  };
+
+  //hàm xử lý khi người dùng click chuột
+  const handleClickElement = (e) => {
+    clickElement.current = e.target;
+
+    //nếu người dùng không click vào các option thì tắt box_option
+    if (clickElement.current.dataset.type === "option_value") {
+      setValueBoxSelect({ ...valueBoxSelect, hidden: true });
+    } else {
+      setValueBoxSelect({ ...valueBoxSelect, hidden: false });
+      if (
+        !addressSelect.cityOrProvince ||
+        !addressSelect.district ||
+        !addressSelect.wardOrCommune
+      ) {
+        setErrorInput({ ...errorInput, inputSelect: true });
+      }
+    }
+  };
+
+  //hàm xử lý khi người dùng nhập dữ liệu vào thẻ inputSelect
+  const handleChangeSearchValue = (e) => {
+    setValueSearch(e.target.value);
+    setValueInputSelect(e.target.value);
+  };
+
+  //cập nhật lại listValue mỗi khi người dùng search
+  useEffect(() => {
+    const newListValue = valueBoxSelect.listValue.filter((value) =>
+      value.name.toLowerCase().includes(valueSearch.toLowerCase())
+    );
+    setListValueOption(newListValue);
+  }, [valueSearch, valueBoxSelect]);
+
+  //hàm xử lý khi xác nhận address
+  const handleConfirmAddress = () => {
+    let newErrorInput = { ...errorInput };
+    if (
+      !orderAddress.userName ||
+      !orderAddress.phoneNumber ||
+      !orderAddress.specificAddress
+    ) {
+      newErrorInput = {
+        ...newErrorInput,
+        userName: !orderAddress.userName,
+        phoneNumber: !orderAddress.phoneNumber,
+        specificAddress: !orderAddress.specificAddress,
+      };
+    }
+
+    if (!isValidVietnamPhoneNumber(orderAddress.phoneNumber)) {
+      newErrorInput = { ...newErrorInput, phoneNumber: true };
+    }
+
+    if (!addressSelect.wardOrCommune.name) {
+      newErrorInput = { ...newErrorInput, inputSelect: true };
+    }
+
+    if (
+      newErrorInput.inputSelect ||
+      newErrorInput.cityOrProvince ||
+      newErrorInput.district ||
+      newErrorInput.wardOrCommune ||
+      newErrorInput.phoneNumber
+    ) {
+      setErrorInput(newErrorInput);
+    } else {
+      setErrorInput(newErrorInput);
+      const newAddress = {
+        ...orderAddress,
+        cityOrProvince: addressSelect.cityOrProvince.name,
+        district: addressSelect.district.name,
+        wardOrCommune: addressSelect.wardOrCommune.name,
+      };
+
+      handleUpdateCurrentOrderAddress(newAddress);
+      handleTurnPopup("turn_off");
+    }
+  };
+
   return (
-    <div className="popup_info_user_at_order">
+    <div className="popup_info_user_at_order" onMouseDown={handleClickElement}>
       <div className="layout"></div>
       <div className="box_content">
         <div className="content">
@@ -222,8 +373,13 @@ const PopupInfoUserAtOrder = ({ userLogged, deliveryAddress }) => {
                 placeholder="Enter your name"
                 value={orderAddress.userName}
                 onChange={handleChangeInputInfoUser}
+                className={errorInput.userName ? "error" : ""}
               />
-              <p className={`desc ${orderAddress.userName ? "active" : ""}`}>
+              <p
+                className={`desc ${orderAddress.userName ? "active" : ""} ${
+                  errorInput.userName ? "error" : ""
+                }`}
+              >
                 Name
               </p>
             </div>
@@ -236,8 +392,13 @@ const PopupInfoUserAtOrder = ({ userLogged, deliveryAddress }) => {
                 placeholder="Enter your phone number"
                 value={orderAddress.phoneNumber}
                 onChange={handleChangeInputInfoUser}
+                className={errorInput.phoneNumber ? "error" : ""}
               />
-              <p className={`desc ${orderAddress.phoneNumber ? "active" : ""}`}>
+              <p
+                className={`desc ${orderAddress.phoneNumber ? "active" : ""} ${
+                  errorInput.phoneNumber ? "error" : ""
+                }`}
+              >
                 Phone number
               </p>
             </div>
@@ -247,78 +408,110 @@ const PopupInfoUserAtOrder = ({ userLogged, deliveryAddress }) => {
             <div className="box_input">
               <input
                 type="text"
-                onFocus={() => {
-                  setValueInputSelect("");
-                }}
-                onBlur={() => {
-                  let newValue = "";
-                  Object.values(addressSelect).forEach((item) => {
-                    if (!newValue) {
-                      newValue = item.name;
-                    } else {
-                      newValue = newValue + ", " + item.name;
-                    }
-                  });
-                  setValueInputSelect(newValue);
-                }}
+                onChange={handleChangeSearchValue}
+                onFocus={handleFocusInputSelect}
+                onBlur={handleBlurInputSelect}
                 placeholder={`${
                   !valueInputSelect
                     ? "City/Province, District, Ward/Commune"
                     : valueInputSelect
                 }`}
                 value={valueInputSelect}
+                data-type={"option_value"}
+                className={errorInput.inputSelect ? "error" : ""}
               />
-              <p className="desc">Tỉnh/Thành phố, Quận/Huyện, Phường, Xã</p>
+              <p
+                className={`desc ${valueInputSelect ? "active" : ""} ${
+                  errorInput.inputSelect ? "error" : ""
+                }`}
+              >
+                Tỉnh/Thành phố, Quận/Huyện, Phường, Xã
+              </p>
             </div>
-
-            <div className="box_option">
-              <div className="title">
-                <p
-                  className={`desc ${
-                    valueBoxSelect.option === "cityOrProvince" ? "active" : ""
-                  }`}
-                  onClick={() => {
-                    handleTurnOption("cityOrProvince");
-                  }}
-                >
-                  Tỉnh/Thành phố
-                </p>
-                <p
-                  className={`desc ${
-                    valueBoxSelect.option === "district" ? "active" : ""
-                  }`}
-                  onClick={() => {
-                    handleTurnOption("district");
-                  }}
-                >
-                  Quận/Huyện
-                </p>
-                <p
-                  className={`desc ${
-                    valueBoxSelect.option === "wardOrCommune" ? "active" : ""
-                  }`}
-                  onClick={() => {
-                    handleTurnOption("wardOrCommune");
-                  }}
-                >
-                  Phường/Xã
-                </p>
-              </div>
-
-              <div className="list_value">
-                {valueBoxSelect.listValue.map((item) => (
+            {valueBoxSelect.hidden && (
+              <div className="box_option">
+                <div className="title">
                   <p
-                    className="desc"
-                    key={item.id}
-                    onClick={() =>
-                      handleSelectOption({ name: item.name, id: item.id })
-                    }
+                    className={`desc ${
+                      valueBoxSelect.option === "cityOrProvince" ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      handleTurnOption("cityOrProvince");
+                    }}
+                    data-type={"option_value"}
                   >
-                    {item.name}
+                    Tỉnh/Thành phố
                   </p>
-                ))}
+                  <p
+                    className={`desc ${
+                      valueBoxSelect.option === "district" ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      handleTurnOption("district");
+                    }}
+                    data-type={"option_value"}
+                  >
+                    Quận/Huyện
+                  </p>
+                  <p
+                    className={`desc ${
+                      valueBoxSelect.option === "wardOrCommune" ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      handleTurnOption("wardOrCommune");
+                    }}
+                    data-type={"option_value"}
+                  >
+                    Phường/Xã
+                  </p>
+                </div>
+
+                <div className="list_value">
+                  {listValueOption.map((item) => (
+                    <p
+                      data-type="option_value"
+                      className="desc"
+                      key={item.id}
+                      onClick={() =>
+                        handleSelectOption({ name: item.name, id: item.id })
+                      }
+                    >
+                      {item.name}
+                    </p>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+          </div>
+
+          <div className="box_input_specific_address">
+            <input
+              type="text"
+              placeholder="Enter specific address"
+              value={orderAddress.specificAddress}
+              onChange={handleChangeInputInfoUser}
+              name="specificAddress"
+              className={errorInput.specificAddress ? "error" : ""}
+            />
+            <p
+              className={`desc placeholder ${
+                orderAddress.specificAddress ? "active" : ""
+              } ${errorInput.specificAddress ? "error" : ""}`}
+            >
+              Specific address
+            </p>
+          </div>
+
+          <div className="bottom_box_content">
+            <button
+              className="btn_dark_pink"
+              onClick={() => handleTurnPopup("turn_off")}
+            >
+              Hủy bỏ
+            </button>
+            <button className="btn_dark_pink" onClick={handleConfirmAddress}>
+              Xác nhận
+            </button>
           </div>
         </div>
       </div>

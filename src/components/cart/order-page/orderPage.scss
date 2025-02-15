@@ -97,46 +97,80 @@
     }
   }
 
-  .box_place_order {
+  .bottom_order {
     width: 70%;
     max-width: 900px;
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
     margin-top: 30px;
 
-    .content {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      width: 50%;
+    .box_address {
+      width: 45%;
       border: 1px solid #ccc;
       border-radius: 20px;
       padding: 20px;
 
-      .box_payment {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 15px;
-
-        select {
-          // border: none;
-          border-color: #ccc;
-          outline: none;
-          width: 200px;
-          padding: 5px 10px;
-        }
-      }
-
-      .item {
+      .top {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        margin-bottom: 30px;
+
+        .desc {
+          padding: 3px 10px;
+          cursor: pointer;
+
+          &:hover {
+            color: $dark-pink;
+          }
+        }
       }
 
-      .btn_dark_pink {
-        @include btn-dark-pink;
-        margin-top: 10px;
+      .box_info {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+        width: 100%;
+      }
+    }
+
+    .box_place_order {
+      width: 45%;
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        padding: 20px;
+
+        .box_payment {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 15px;
+
+          select {
+            // border: none;
+            border-color: #ccc;
+            outline: none;
+            width: 200px;
+            padding: 5px 10px;
+          }
+        }
+
+        .item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .btn_dark_pink {
+          @include btn-dark-pink;
+          margin-top: 10px;
+        }
       }
     }
   }

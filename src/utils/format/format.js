@@ -23,3 +23,12 @@ export const formatDate = (isoString) => {
 
   return `${day}/${month}/${year}`; // Trả về định dạng ngày/tháng/năm
 };
+
+export const isValidVietnamPhoneNumber = (phone) => {
+  // Xóa khoảng trắng, dấu gạch,...
+  const cleaned = phone.replace(/\D/g, "");
+
+  // Kiểm tra định dạng
+  const regex = /^(?:\+84|0)(3|5|7|8|9)[0-9]{8}$/;
+  return regex.test(cleaned);
+};

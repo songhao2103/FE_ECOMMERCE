@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import baseUrl from "../../../config/baseUrl";
 import refreshToken from "../../../utils/tokenApi/refreshToken";
 import fetchWithAuth from "../../../utils/tokenApi/fetchWithAuth";
@@ -8,6 +9,16 @@ import PopupInfoUserAtOrder from "../popup-info-user-at-order/PopupInfoUserAtOrd
 const OrderPage = ({ productsOnOrderPage, userLogged }) => {
   const [ordersList, setOrdersList] = useState([]);
   const [deliveryAddress, setDeliveryAddress] = useState({});
+  const [turnPopup, setTurnPopup] = useState(false);
+
+  const [currentOrderAddress, setCurrentOrderAddress] = useState({
+    userName: userLogged.userName,
+    phoneNumber: userLogged.phoneNumber || "",
+    cityOrProvince: userLogged.address?.cityOrProvince || "",
+    district: userLogged.address?.district || "",
+    wardOrCommune: userLogged.address?.wardOrCommune || "",
+    specific: userLogged.address?.specific || "",
+  });
 
   // Tạo các order, chia các sản phẩm của cùng 1 store thành 1 order
   useEffect(() => {
@@ -112,9 +123,30 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
     return newShippingMoney;
   }, [deliveryAddress, ordersList]);
 
+  //hàm xử lý bật tắt popup
+  const handleTurnPopup = (turnType) => {
+    if (turnType === "turn_on") {
+      setTurnPopup(true);
+    } else {
+      setTurnPopup(false);
+    }
+  };
+
+  //hàm xử lý tính cập nhật lại currentOrderAddress
+  const handleUpdateCurrentOrderAddress = (newCurrentOrderAddress) => {
+    setCurrentOrderAddress(newCurrentOrderAddress);
+  };
+
   return (
     <div className="order_page">
-      <PopupInfoUserAtOrder userLogged={userLogged} />
+      {turnPopup && (
+        <PopupInfoUserAtOrder
+          userLogged={userLogged}
+          handleTurnPopup={handleTurnPopup}
+          handleUpdateCurrentOrderAddress={handleUpdateCurrentOrderAddress}
+        />
+      )}
+
       <div className="top">
         <button className="btn_dark_pink">
           <i className="fa-solid fa-arrow-left"></i>
@@ -167,48 +199,91 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
         ))}
       </div>
 
-      <div className="box_place_order">
-        <div className="content">
-          {" "}
-          <div className="box_payment">
-            <label htmlFor="payment" className="desc">
-              Hình thức thanh toán
-            </label>
-            <select name="" id="payment">
-              <option value="thanh_toan_khi_nhan_hang">
-                Thanh toán khi nhận hàng
-              </option>
-              <option value="the ngân hàng">Thẻ ngân hàng</option>
-            </select>
-          </div>
-          <div className="total_product_amount item">
-            <p className="desc">Tổng tiền sản phẩm:</p>
-            <p className="desc">
-              {formatCurrencyVND(
-                Object.values(subtotalPriceOfOrder).reduce(
-                  (sub, item) => sub + item,
-                  0
-                )
-              )}
+      <div className="bottom_order">
+        <div className="box_address">
+          <div className="top">
+            <div className="title_20">Address</div>
+            <p className="desc" onClick={() => handleTurnPopup("turn_on")}>
+              Thay đổi
             </p>
           </div>
-          <div className="total_shipping_amount item">
-            <p className="desc">Tổng tiền vận chuyển:</p>
-            <p className="desc">{formatCurrencyVND(shippingMoney)}</p>
+
+          <div className="box_info">
+            <p className="desc">User name:</p>
+            <p className="desc">{currentOrderAddress.userName}</p>
           </div>
-          <div className="total_amount item">
-            <p className="desc">Tổng thanh toán:</p>
+          <div className="box_info">
+            <p className="desc">Phone number:</p>
             <p className="desc">
-              {formatCurrencyVND(
-                shippingMoney +
+              {currentOrderAddress.phoneNumber
+                ? currentOrderAddress.phoneNumber
+                : "Chưa có số điện thoại!"}
+            </p>
+          </div>
+
+          <div className="address box_info">
+            <p className="desc">Address:</p>
+            {currentOrderAddress.cityOrProvince ? (
+              <p className="desc">{`${
+                currentOrderAddress.wardOrCommune
+                  ? currentOrderAddress.wardOrCommune + ","
+                  : ""
+              } ${
+                currentOrderAddress.district
+                  ? currentOrderAddress.district + ","
+                  : ""
+              } ${
+                currentOrderAddress.cityOrProvince
+                  ? currentOrderAddress.cityOrProvince + ","
+                  : ""
+              }`}</p>
+            ) : (
+              <p className="desc">Chưa có địa chỉ!</p>
+            )}
+          </div>
+        </div>
+        <div className="box_place_order">
+          <div className="content">
+            <div className="box_payment">
+              <label htmlFor="payment" className="desc">
+                Hình thức thanh toán
+              </label>
+              <select name="" id="payment">
+                <option value="thanh_toan_khi_nhan_hang">
+                  Thanh toán khi nhận hàng
+                </option>
+                <option value="the ngân hàng">Thẻ ngân hàng</option>
+              </select>
+            </div>
+            <div className="total_product_amount item">
+              <p className="desc">Tổng tiền sản phẩm:</p>
+              <p className="desc">
+                {formatCurrencyVND(
                   Object.values(subtotalPriceOfOrder).reduce(
                     (sub, item) => sub + item,
                     0
                   )
-              )}
-            </p>
+                )}
+              </p>
+            </div>
+            <div className="total_shipping_amount item">
+              <p className="desc">Tổng tiền vận chuyển:</p>
+              <p className="desc">{formatCurrencyVND(shippingMoney)}</p>
+            </div>
+            <div className="total_amount item">
+              <p className="desc">Tổng thanh toán:</p>
+              <p className="desc">
+                {formatCurrencyVND(
+                  shippingMoney +
+                    Object.values(subtotalPriceOfOrder).reduce(
+                      (sub, item) => sub + item,
+                      0
+                    )
+                )}
+              </p>
+            </div>
+            <div className="btn_dark_pink">Đặt hàng</div>
           </div>
-          <div className="btn_dark_pink">Đặt hàng</div>
         </div>
       </div>
     </div>
