@@ -18,35 +18,38 @@ const connectStringAddress = (objectAddress) => {
 
   return newValue;
 };
-const PopupInfoUserAtOrder = ({
-  userLogged,
-  deliveryAddress,
+const PopupInfoUserAtOrder = ({ 
   handleTurnPopup,
   handleUpdateCurrentOrderAddress,
+  currentOrderAddress,
 }) => {
   const [orderAddress, setOrderAddress] = useState({
-    userName: userLogged.userName,
-    phoneNumber: userLogged.phoneNumber || "",
-    specificAddress: userLogged.address?.specific || "",
+    userName: currentOrderAddress.userName,
+    phoneNumber: currentOrderAddress.phoneNumber || "",
+    specificAddress: currentOrderAddress.specificAddress || "",
   });
 
   //lưu địa mà người dùng chọn
   const [addressSelect, setAddressSelect] = useState({
-    cityOrProvince: { name: userLogged.address?.cityOrProvince || "" },
-    district: { name: userLogged.address?.district || "" },
-    wardOrCommune: { name: userLogged.address?.wardOrCommune || "" },
+    cityOrProvince: { name: currentOrderAddress.cityOrProvince || "" },
+    district: { name: currentOrderAddress.district || "" },
+    wardOrCommune: { name: currentOrderAddress.wardOrCommune || "" },
   });
 
   //lưu giá trị của ô input select
   const [valueInputSelect, setValueInputSelect] = useState(() => {
     let newValue = "";
-    Object.values(addressSelect).forEach((item) => {
-      if (!newValue) {
-        newValue = item.name;
-      } else {
-        newValue = newValue + ", " + item.name;
-      }
-    });
+
+    if (currentOrderAddress?.wardOrCommune.name) {
+      newValue = newValue + currentOrderAddress.wardOrCommune.name + " ,";
+    }
+    if (currentOrderAddress?.district.name) {
+      newValue = newValue + currentOrderAddress.district.name + " ,";
+    }
+    if (currentOrderAddress?.cityOrProvince.name) {
+      newValue = newValue + currentOrderAddress.cityOrProvince.name + " ,";
+    }
+
     return newValue;
   });
 
@@ -348,9 +351,9 @@ const PopupInfoUserAtOrder = ({
       setErrorInput(newErrorInput);
       const newAddress = {
         ...orderAddress,
-        cityOrProvince: addressSelect.cityOrProvince.name,
-        district: addressSelect.district.name,
-        wardOrCommune: addressSelect.wardOrCommune.name,
+        cityOrProvince: addressSelect.cityOrProvince,
+        district: addressSelect.district,
+        wardOrCommune: addressSelect.wardOrCommune,
       };
 
       handleUpdateCurrentOrderAddress(newAddress);

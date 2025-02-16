@@ -110,6 +110,12 @@
       border-radius: 20px;
       padding: 20px;
 
+      .error_order {
+        .desc {
+          color: red;
+        }
+      }
+
       .top {
         display: flex;
         align-items: center;
@@ -135,7 +141,13 @@
     }
 
     .box_place_order {
-      width: 45%;
+      width: 50%;
+
+      .error_order {
+        .desc {
+          color: red;
+        }
+      }
 
       .content {
         display: flex;
@@ -148,9 +160,8 @@
 
         .box_payment {
           display: flex;
-          flex-direction: column;
-          gap: 10px;
           margin-bottom: 15px;
+          justify-content: space-between;
 
           select {
             // border: none;

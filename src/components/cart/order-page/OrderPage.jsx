@@ -1,23 +1,32 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import baseUrl from "../../../config/baseUrl";
 import refreshToken from "../../../utils/tokenApi/refreshToken";
 import fetchWithAuth from "../../../utils/tokenApi/fetchWithAuth";
 import { formatCurrencyVND } from "../../../utils/format/format";
 import PopupInfoUserAtOrder from "../popup-info-user-at-order/PopupInfoUserAtOrder";
+import Toast from "../../../utils-component/toast/Toast";
+import { showToast } from "../../../redux-toolkit/redux-slice/toastSlice";
+import { updateCart } from "../../../redux-toolkit/redux-slice/userLogged";
 
 const OrderPage = ({ productsOnOrderPage, userLogged }) => {
   const [ordersList, setOrdersList] = useState([]);
-  const [deliveryAddress, setDeliveryAddress] = useState({});
   const [turnPopup, setTurnPopup] = useState(false);
+  const dispatch = useDispatch();
 
   const [currentOrderAddress, setCurrentOrderAddress] = useState({
     userName: userLogged.userName,
     phoneNumber: userLogged.phoneNumber || "",
-    cityOrProvince: userLogged.address?.cityOrProvince || "",
-    district: userLogged.address?.district || "",
-    wardOrCommune: userLogged.address?.wardOrCommune || "",
-    specific: userLogged.address?.specific || "",
+    cityOrProvince: { name: userLogged.address?.cityOrProvince || "" },
+    district: { name: userLogged.address?.district || "" },
+    wardOrCommune: { name: userLogged.address?.wardOrCommune || "" },
+    specificAddress: userLogged.address?.specific || "",
+  });
+
+  const [paymentOrder, setPaymentOrder] = useState("derect_payment");
+  const [errorOrder, setErrorOrder] = useState({
+    address: false,
+    payment: false,
   });
 
   // Tạo các order, chia các sản phẩm của cùng 1 store thành 1 order
@@ -110,18 +119,19 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
       return;
     }
 
-    let newShippingMoney = {};
+    let newShippingMoney = 0;
     ordersList.forEach((order) => {
-      newShippingMoney = !deliveryAddress.provinceOrCity
+      newShippingMoney += !currentOrderAddress?.cityOrProvince?.name
         ? 0
         : order.storeAddress === "foreign"
-        ? formatCurrencyVND(50000)
-        : order.storeAddress === deliveryAddress.provinceOrCity
-        ? formatCurrencyVND(15000)
-        : formatCurrencyVND(300000);
+        ? 50000
+        : order.storeAddress === currentOrderAddress?.cityOrProvince?.name
+        ? 15000
+        : 30000;
     });
+
     return newShippingMoney;
-  }, [deliveryAddress, ordersList]);
+  }, [currentOrderAddress, ordersList]);
 
   //hàm xử lý bật tắt popup
   const handleTurnPopup = (turnType) => {
@@ -135,15 +145,113 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
   //hàm xử lý tính cập nhật lại currentOrderAddress
   const handleUpdateCurrentOrderAddress = (newCurrentOrderAddress) => {
     setCurrentOrderAddress(newCurrentOrderAddress);
+    let newError = { ...errorOrder };
+    if (
+      !newCurrentOrderAddress.userName ||
+      !newCurrentOrderAddress.phoneNumber ||
+      !newCurrentOrderAddress.specificAddress ||
+      !newCurrentOrderAddress.cityOrProvince.name ||
+      !newCurrentOrderAddress.district.name ||
+      !newCurrentOrderAddress.wardOrCommune.name
+    ) {
+      newError.address = true;
+    } else {
+      newError.address = false;
+    }
+  };
+
+  //hàm lựa chọn phương thức thanh toán
+  const handleChangePaymentSelect = (e) => {
+    setPaymentOrder(e.target.value);
+  };
+
+  //hàm xử lý khi người dùng xác nhận order
+  const handleConfirmOrder = async () => {
+    let newError = { ...errorOrder };
+    if (
+      !currentOrderAddress.userName ||
+      !currentOrderAddress.phoneNumber ||
+      !currentOrderAddress.specificAddress ||
+      !currentOrderAddress.cityOrProvince.name ||
+      !currentOrderAddress.district.name ||
+      !currentOrderAddress.wardOrCommune.name
+    ) {
+      newError.address = true;
+    } else {
+      newError.address = false;
+    }
+
+    if (paymentOrder === "bank_card") {
+      newError.payment = true;
+    } else {
+      newError.payment = false;
+    }
+
+    if (newError.payment || newError.address) {
+      setErrorOrder(newError);
+    } else {
+      setErrorOrder(newError);
+
+      //gọi API để tạo các order
+      try {
+        let response = await fetchWithAuth(baseUrl + "/order/create-order", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            currentOrderAddress,
+            ordersList,
+            userId: userLogged._id,
+          }),
+        });
+
+        if (response.status === 403) {
+          const refreshTokenResponse = await refreshToken();
+
+          if (!refreshTokenResponse.ok) {
+            throw new Error("Không tạo mới được order!!");
+          }
+        }
+
+        response = await fetchWithAuth(baseUrl + "/order/create-order", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            currentOrderAddress,
+            ordersList,
+            userId: userLogged._id,
+          }),
+        });
+
+        if (response.ok) {
+          dispatch(
+            showToast({
+              message: "Đặt hàng thành công!!",
+            })
+          );
+
+          //cập nhật lại giỏ hàng ở redux
+          const data = await response.json();
+          dispatch(updateCart(data));
+        }
+      } catch (error) {
+        console.log("Không tạo được order!!  " + error.message);
+      }
+    }
   };
 
   return (
     <div className="order_page">
+      <Toast />
       {turnPopup && (
         <PopupInfoUserAtOrder
           userLogged={userLogged}
           handleTurnPopup={handleTurnPopup}
           handleUpdateCurrentOrderAddress={handleUpdateCurrentOrderAddress}
+          currentOrderAddress={currentOrderAddress}
         />
       )}
 
@@ -177,13 +285,14 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
                 <div className="item box_shipping desc">
                   <p className="desc">Shipping fee: </p>
                   <p className="desc">{`${
-                    !deliveryAddress.provinceOrCity
+                    !currentOrderAddress.cityOrProvince?.name
                       ? "Chưa có địa chỉ giao hàng!!"
                       : order.storeAddress === "foreign"
                       ? formatCurrencyVND(50000)
-                      : order.storeAddress === deliveryAddress.provinceOrCity
+                      : order.storeAddress ===
+                        currentOrderAddress.cityOrProvince?.name
                       ? formatCurrencyVND(15000)
-                      : formatCurrencyVND(300000)
+                      : formatCurrencyVND(30000)
                   }`}</p>
                 </div>
 
@@ -201,6 +310,12 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
 
       <div className="bottom_order">
         <div className="box_address">
+          {errorOrder.address && (
+            <div className="error_order">
+              <p className="desc">Địa chỉ chưa hợp lệ!</p>
+            </div>
+          )}
+
           <div className="top">
             <div className="title_20">Address</div>
             <p className="desc" onClick={() => handleTurnPopup("turn_on")}>
@@ -225,16 +340,16 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
             <p className="desc">Address:</p>
             {currentOrderAddress.cityOrProvince ? (
               <p className="desc">{`${
-                currentOrderAddress.wardOrCommune
-                  ? currentOrderAddress.wardOrCommune + ","
+                currentOrderAddress.wardOrCommune.name
+                  ? currentOrderAddress.wardOrCommune.name + ","
                   : ""
               } ${
-                currentOrderAddress.district
-                  ? currentOrderAddress.district + ","
+                currentOrderAddress.district.name
+                  ? currentOrderAddress.district.name + ","
                   : ""
               } ${
-                currentOrderAddress.cityOrProvince
-                  ? currentOrderAddress.cityOrProvince + ","
+                currentOrderAddress.cityOrProvince.name
+                  ? currentOrderAddress.cityOrProvince.name + ","
                   : ""
               }`}</p>
             ) : (
@@ -244,27 +359,25 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
         </div>
         <div className="box_place_order">
           <div className="content">
+            {errorOrder.payment && (
+              <div className="error_order">
+                <p className="desc">
+                  Chưa cập nhật thanh toán bằng thẻ ngân hàng!!
+                </p>
+              </div>
+            )}
             <div className="box_payment">
               <label htmlFor="payment" className="desc">
                 Hình thức thanh toán
               </label>
-              <select name="" id="payment">
-                <option value="thanh_toan_khi_nhan_hang">
-                  Thanh toán khi nhận hàng
-                </option>
-                <option value="the ngân hàng">Thẻ ngân hàng</option>
+              <select name="" id="payment" onChange={handleChangePaymentSelect}>
+                <option value="derect_payment">Thanh toán khi nhận hàng</option>
+                <option value="bank_card">Thẻ ngân hàng</option>
               </select>
             </div>
             <div className="total_product_amount item">
               <p className="desc">Tổng tiền sản phẩm:</p>
-              <p className="desc">
-                {formatCurrencyVND(
-                  Object.values(subtotalPriceOfOrder).reduce(
-                    (sub, item) => sub + item,
-                    0
-                  )
-                )}
-              </p>
+              <p className="desc">{formatCurrencyVND(shippingMoney)}</p>
             </div>
             <div className="total_shipping_amount item">
               <p className="desc">Tổng tiền vận chuyển:</p>
@@ -282,7 +395,9 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
                 )}
               </p>
             </div>
-            <div className="btn_dark_pink">Đặt hàng</div>
+            <div className="btn_dark_pink" onClick={handleConfirmOrder}>
+              Đặt hàng
+            </div>
           </div>
         </div>
       </div>
