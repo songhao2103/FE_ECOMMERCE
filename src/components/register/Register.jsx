@@ -1,10 +1,17 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import Toast from "../../utils-component/toast/Toast";
+import { showToast } from "../../redux-toolkit/redux-slice/toastSlice";
+import Loader from "../../utils-component/loader/Loader";
 import media from "/media_images/login_and_register_media.png";
 import baseUrl from "../../config/baseUrl";
-import { Link } from "react-router-dom";
 
 const Register = () => {
   //=====================State====================================
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   //Lưu trạng thái hiện thị giá trị của các ô input có type là password
   const [hiddenInputTypePassword, setHiddenInputTypePassword] = useState({
     password: false,
@@ -75,7 +82,7 @@ const Register = () => {
     //kiểm tra rePassword
     if (!rePassword) {
       newErrors.rePassword = "Re-password không được để trống!";
-    } else if (rePassword !== rePassword) {
+    } else if (password !== rePassword) {
       newErrors.rePassword = "Password không khớp, thử lại!";
     } else {
       newErrors.rePassword = "";
@@ -93,6 +100,7 @@ const Register = () => {
     }
 
     try {
+      setIsLoading(true);
       const response = await fetch(`${baseUrl}/register`, {
         method: "POST",
         headers: {
@@ -102,21 +110,27 @@ const Register = () => {
         credentials: "include", // Thêm credentials nếu gửi cookie
       });
 
-      if (!response.ok) {
-        throw new Error("Lỗi khi gọi API đăng ký11" + response.status);
-      }
       const data = await response.json();
 
       if (!data.success) {
+        console.log(data.errors);
         setErrors(data.errors);
+      } else {
+        navigate("/log-in");
+        dispatch(showToast({ message: "Đăng ký tài khoản thành công!!" }));
       }
     } catch (error) {
       console.error("Lỗi khi gửi API đăng ký " + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  if (isLoading) return <Loader />;
+
   return (
     <div className="register">
+      <Toast />
       <div className="media">
         <img src={media} alt="register media" />
       </div>

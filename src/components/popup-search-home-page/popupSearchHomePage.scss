@@ -1,0 +1,21 @@
+.popup_search_home_page {
+  display: flex;
+  justify-content: end;
+  width: 700px;
+
+  .bgc_popup {
+    position: fixed;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    top: 100px;
+    background-color: rgba($color: #000000, $alpha: 0.6);
+    z-index: 999;
+  }
+
+  .content_page {
+    background-color: pink;
+    z-index: 1000;
+    width: 700px;
+  }
+}

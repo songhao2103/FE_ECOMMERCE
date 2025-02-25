@@ -4,10 +4,13 @@ import NavBar from "./nav-bar/NavBar";
 
 const Header = () => {
   return (
-    <div className="header">
-      <Logo />
-      <NavBar />
-      <BoxRight />
+    <div className="box_header">
+      <div className="bgc_header"></div>
+      <div className="header">
+        <Logo />
+        <NavBar />
+        <BoxRight />
+      </div>
     </div>
   );
 };

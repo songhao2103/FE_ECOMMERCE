@@ -1,0 +1,298 @@
+.products_list_page {
+  .desc {
+    @include desc-black;
+  }
+
+  .title_36 {
+    @include title-36;
+  }
+
+  .content_page {
+    margin-top: 30px;
+
+    .box_select {
+      display: flex;
+      justify-content: space-between;
+
+      .box_filter {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .filter {
+          display: flex;
+          position: relative;
+          align-items: center;
+          gap: 10px;
+
+          .desc {
+            cursor: pointer;
+
+            &:hover {
+              color: $dark-pink;
+            }
+          }
+
+          input {
+            display: none;
+          }
+
+          .list_options {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            position: absolute;
+            background-color: $white;
+            border: 1px solid #ccc;
+            padding: 5px 15px 5px 5px;
+            border-radius: 10px;
+            top: 25px;
+            display: none;
+            z-index: 1000;
+          }
+
+          .layout {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 999;
+            display: none;
+          }
+
+          input:checked ~ .list_options {
+            display: flex;
+          }
+
+          input:checked ~ .layout {
+            display: block;
+          }
+
+          .list_option_select {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .option_select {
+              padding: 5px 15px 5px 5px;
+              background-color: $white;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+              position: relative;
+              background-color: #f5f5d7;
+
+              .icon {
+                position: absolute;
+                font-size: 1.3rem;
+                top: 2px;
+                right: 2px;
+                cursor: pointer;
+
+                &:hover {
+                  color: $dark-pink;
+                }
+              }
+            }
+          }
+
+          .box_operator {
+            display: flex;
+            gap: 10px;
+            position: relative;
+            width: 140px;
+            margin-left: 15px;
+
+            .desc {
+              cursor: pointer;
+            }
+
+            .list_type {
+              display: flex;
+              flex-direction: column;
+              background-color: $white;
+              padding: 5px 15px 5px 5px;
+              border-radius: 10px;
+              border: 1px solid #ccc;
+              position: absolute;
+              top: 30px;
+              width: 100%;
+              display: none;
+              z-index: 1000;
+            }
+
+            #operator_device {
+              display: none;
+            }
+
+            #operator_device:checked ~ .list_type {
+              display: flex;
+            }
+
+            .layout_operator {
+              position: fixed;
+              top: 0;
+              right: 0;
+              left: 0;
+              bottom: 0;
+              z-index: 999;
+              display: none;
+            }
+
+            #operator_device:checked ~ .layout_operator {
+              display: block;
+            }
+
+            #operator_store:checked ~ .list_type {
+              display: flex;
+            }
+
+            #operator_store:checked ~ .layout_operator {
+              display: block;
+            }
+          }
+        }
+      }
+
+      .box_right {
+        display: flex;
+        flex-direction: column;
+        width: 28%;
+        gap: 20px;
+
+        .box_sort {
+          display: flex;
+          gap: 50px;
+
+          .box_option {
+            position: relative;
+            display: flex;
+            gap: 10px;
+            width: 50%;
+
+            .desc {
+              cursor: pointer;
+
+              &:hover {
+                color: $dark-pink;
+              }
+            }
+
+            .list_options {
+              display: flex;
+              flex-direction: column;
+              gap: 5px;
+              padding: 5px 15px 5px 5px;
+              background-color: $white;
+              border-radius: 10px;
+              border: 1px solid #ccc;
+              position: absolute;
+              top: 30px;
+              display: none;
+              z-index: 1000;
+            }
+
+            input {
+              display: none;
+            }
+
+            .layout {
+              position: fixed;
+              top: 0;
+              right: 0;
+              left: 0;
+              bottom: 0;
+              display: none;
+              z-index: 999;
+            }
+
+            input:checked ~ .layout {
+              display: block;
+            }
+
+            input:checked ~ .list_options {
+              display: flex;
+            }
+          }
+        }
+
+        .box_search {
+          display: flex;
+          position: relative;
+          width: 100%;
+
+          input {
+            width: 100%;
+            border-bottom: 2px solid #ccc;
+            padding: 5px 10px;
+          }
+
+          .icon {
+            cursor: pointer;
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            &:hover {
+              color: $dark-pink;
+            }
+          }
+        }
+      }
+    }
+
+    .box_products_list {
+      .content {
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 1.3333%;
+        row-gap: 15px;
+        margin-top: 40px;
+      }
+
+      .bottom {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
+
+        .icon {
+          font-size: 1.8rem;
+          cursor: pointer;
+
+          &:hover {
+            color: $dark-pink;
+          }
+        }
+
+        .icon.no_drop {
+          cursor: no-drop;
+
+          &:hover {
+            color: $black;
+          }
+        }
+
+        .page_numbers {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+
+          .item {
+            cursor: pointer;
+
+            &:hover {
+              color: $dark-pink;
+            }
+          }
+
+          .item.active {
+            color: $dark-pink;
+          }
+        }
+      }
+    }
+  }
+}

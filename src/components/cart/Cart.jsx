@@ -15,16 +15,16 @@ import OrderPage from "./order-page/OrderPage";
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.userLoggedSlice.cart); //lấy giỏ hàng từ store của redux
   const userLogged = useSelector((state) => state.userLoggedSlice.userLogged);
   const [productsOfCart, setProductsOfCart] = useState([]); //lưu thông tin của các sản phẩm có trong giỏ hàng
   const [isLoading, setIsLoading] = useState(true);
   const [productsSelect, setProductSelect] = useState([]); // lưu các sản phẩm mà người dùng chọn
   const [isOrder, setIsOrder] = useState(false);
+  const cart = useSelector((state) => state.userLoggedSlice.cart); //lấy giỏ hàng từ   store của redux
 
   //lấy thông tin chi tiết của các sản phẩm có trong cửa hàng
   useEffect(() => {
-    if (cart && cart.products.length > 0 && isLoading === true) {
+    if (cart?.products?.length > 0) {
       const fetchProductsOfCart = async () => {
         try {
           setIsLoading(true);
@@ -73,6 +73,8 @@ const Cart = () => {
       };
 
       fetchProductsOfCart();
+    } else {
+      setIsLoading(false);
     }
   }, [cart]);
 
@@ -207,6 +209,29 @@ const Cart = () => {
     await updateCartOnDatabase(newCart);
   };
 
+  //hàm xử lý bật tắt trang order
+  const handleTurnOrderPage = (value) => {
+    if (value) {
+      if (subtotal > 0) {
+        setIsOrder(true);
+      }
+    } else {
+      setIsOrder(false);
+    }
+  };
+
+  //hàm xử lý cập nhật lại giỏ hàng ở redux
+  const updateCartOnRedux = (newCart) => {
+    dispatch(updateCart(newCart));
+  };
+
+  //hàm cập nhật lại danh sách sản phẩm có trong giỏ hàng
+  const handleUpdateProductsOfCart = (productIds) => {
+    const newProductsOfCart = [...productsOfCart].filter(
+      (product) => !productIds.includes(product.productId)
+    );
+    setProductsOfCart(newProductsOfCart);
+  };
   if (isLoading && productsOfCart.length === 0) return <Loader />;
 
   if (isOrder)
@@ -216,6 +241,9 @@ const Cart = () => {
         productsOnOrderPage={productsOfCart.filter((product) =>
           productsSelect.get(product._id)
         )}
+        handleTurnOrderPage={handleTurnOrderPage}
+        updateCartOnRedux={updateCartOnRedux}
+        handleUpdateProductsOfCart={handleUpdateProductsOfCart}
       />
     );
 
@@ -340,9 +368,7 @@ const Cart = () => {
 
           <button
             className={`btn_dark_pink ${subtotal > 0 ? "" : "no_drop"}`}
-            onClick={() =>
-              subtotal > 0 ? setIsOrder(true) : setIsOrder(false)
-            }
+            onClick={() => handleTurnOrderPage(true)}
           >
             Buy Now
           </button>

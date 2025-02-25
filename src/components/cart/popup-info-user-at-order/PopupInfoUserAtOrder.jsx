@@ -18,7 +18,7 @@ const connectStringAddress = (objectAddress) => {
 
   return newValue;
 };
-const PopupInfoUserAtOrder = ({ 
+const PopupInfoUserAtOrder = ({
   handleTurnPopup,
   handleUpdateCurrentOrderAddress,
   currentOrderAddress,
@@ -31,9 +31,9 @@ const PopupInfoUserAtOrder = ({
 
   //lưu địa mà người dùng chọn
   const [addressSelect, setAddressSelect] = useState({
-    cityOrProvince: { name: currentOrderAddress.cityOrProvince || "" },
-    district: { name: currentOrderAddress.district || "" },
-    wardOrCommune: { name: currentOrderAddress.wardOrCommune || "" },
+    cityOrProvince: currentOrderAddress.cityOrProvince || "",
+    district: currentOrderAddress.district || "",
+    wardOrCommune: currentOrderAddress.wardOrCommune || "",
   });
 
   //lưu giá trị của ô input select

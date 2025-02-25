@@ -1,0 +1,200 @@
+@import "./popup-change-password/popupChangePassword.scss";
+
+.profile_user_page {
+  .top_page {
+    .title_36 {
+      @include title-36;
+    }
+  }
+
+  .desc {
+    @include desc-black;
+  }
+  .content_page {
+    margin-top: 30px;
+    width: 70%;
+    min-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+
+    .box_info_user {
+      display: flex;
+      justify-content: space-between;
+
+      .box_left {
+        width: 30%;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+
+        .avatar {
+          width: 90%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          img {
+            width: 90%;
+            border-radius: 50%;
+          }
+        }
+
+        .box_change_avatar {
+          display: flex;
+          margin-top: 30px;
+
+          input {
+            display: none;
+          }
+
+          .btn_dark_pink {
+            @include btn-dark-pink;
+            padding: 7px 20px;
+            background-color: $white;
+            color: $black;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+
+            &:hover {
+              background-color: #e5e5e5;
+            }
+          }
+        }
+      }
+
+      .box_right {
+        width: 60%;
+        border-left: 1px solid #ccc;
+        padding-left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .box_input {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+
+          input {
+            border: 1px solid #ccc;
+            padding: 10px;
+
+            &:focus {
+              border-color: $black;
+            }
+          }
+
+          .error {
+            color: red;
+            font-size: 1.4rem;
+          }
+        }
+
+        .box_address {
+          .box_select {
+            margin-top: 5px;
+
+            .box_input {
+              position: relative;
+
+              input {
+                border: 1px solid #ccc;
+                padding: 10px 15px;
+                width: 100%;
+              }
+
+              input.error {
+                border-color: $dark-pink;
+              }
+
+              .desc {
+                font-size: 1.2rem;
+                color: $dark-gray;
+                position: absolute;
+                top: -10px;
+                left: 10px;
+                background-color: $white;
+                display: none;
+              }
+
+              .desc.active {
+                display: block;
+              }
+
+              .desc.active.error {
+                color: $dark-pink;
+              }
+            }
+
+            .box_option {
+              margin-top: 10px;
+
+              .title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border: 1px solid #ccc;
+                padding: 10px;
+
+                .desc {
+                  cursor: pointer;
+                }
+
+                .desc.active {
+                  color: $dark-pink;
+                  border-bottom: 3px solid $dark-pink;
+                }
+              }
+
+              .list_value {
+                height: 200px;
+                display: flex;
+                flex-direction: column;
+                margin-top: 20px;
+                overflow-y: scroll;
+                padding: 10px;
+                border: 1px solid#ccc;
+
+                .desc {
+                  cursor: pointer;
+                  padding: 3px 0;
+
+                  &:hover {
+                    color: $dark-pink;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .bottom {
+      display: flex;
+      width: 100%;
+      justify-content: end;
+
+      .box_button {
+        display: flex;
+        gap: 20px;
+        margin-top: 30px;
+        align-items: center;
+
+        .btn_dark_pink {
+          @include btn-dark-pink;
+          padding: 8px 20px;
+        }
+
+        .desc {
+          cursor: pointer;
+
+          &:hover {
+            color: $dark-pink;
+          }
+        }
+      }
+    }
+  }
+}

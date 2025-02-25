@@ -1,14 +1,20 @@
 import { useState } from "react";
 import AddProduct from "./add-product/AddProduct";
+import StoreOrdersList from "./store-order-list/StoreOrderList";
 
 const StorePage = () => {
-  const [optionPage, setOptionPage] = useState("Add Product");
+  const [optionPage, setOptionPage] = useState("Add product");
 
   const handleClickOption = (e) => {
-    if (e.target.classList.contains("item")) {
+    if (
+      e.target.classList.contains("item") &&
+      optionPage !== e.target.textContent
+    ) {
       setOptionPage(e.target.textContent);
     }
   };
+
+  console.log(optionPage);
 
   return (
     <div className="store_page">
@@ -31,15 +37,26 @@ const StorePage = () => {
         ></label>
 
         <ul className="options" onClick={handleClickOption}>
-          <li className="item desc">Add product</li>
-          <li className="item desc">Information</li>
-          <li className="item desc">List of products to confirm</li>
-          <li className="item desc">Store list</li>
-          <li className="item desc">User list</li>
+          <label htmlFor="options_store_page" className="item desc">
+            Add product
+          </label>
+          <label htmlFor="options_store_page" className="item desc">
+            Store order list
+          </label>
+          <label htmlFor="options_store_page" className="item desc">
+            List of products to confirm
+          </label>
+          <label htmlFor="options_store_page" className="item desc">
+            Store list
+          </label>
+          <label htmlFor="options_store_page" className="item desc">
+            User list
+          </label>
         </ul>
       </div>
 
-      <AddProduct />
+      {optionPage === "Add product" && <AddProduct />}
+      {optionPage === "Store order list" && <StoreOrdersList />}
     </div>
   );
 };

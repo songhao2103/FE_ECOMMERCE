@@ -62,6 +62,7 @@ const ProductConfirm = () => {
 
   //lưu sản phẩm từ chối
   const [productRefuse, setProuctRefuse] = useState(null);
+
   /////////////////////////////////////handler//////////////////////////////////
 
   //Lấy danh sách các lựa chọn store và device type

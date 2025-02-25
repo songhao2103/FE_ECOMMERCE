@@ -13,7 +13,6 @@ export const updateUserLoggedEveryReload = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     //lấy accessToken ở local
     const accessToken = JSON.parse(localStorage.getItem("accessToken"));
-
     //kiểm tra accessToken
     if (!accessToken) {
       console.log("accessToken không có, người dùng chưa đăng nhập!");
@@ -57,6 +56,8 @@ export const updateUserLoggedEveryReload = createAsyncThunk(
         "Lỗi cập nhật lại thông tin người dùng đang đăng nhập khi reload lại trang! Error: " +
           error.message
       );
+
+      return rejectWithValue("Lấy thông tin user không thành công!!");
     }
   }
 );

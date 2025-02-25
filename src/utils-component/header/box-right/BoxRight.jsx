@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import urlAvatarDefault from "../../../config/avatarDefault";
 import { updateUserLogged } from "../../../redux-toolkit/redux-slice/userLogged";
+import PopupSearchHomePage from "../../../components/popup-search-home-page/PopupSearchHomePage";
 
 const BoxRight = () => {
   const dispatch = useDispatch();
@@ -11,10 +13,11 @@ const BoxRight = () => {
   );
   const quantityProduct = useSelector((state) =>
     state.userLoggedSlice.cart
-      ? state.userLoggedSlice.cart.products.length
+      ? state.userLoggedSlice.cart?.products?.length
       : null
   );
   const path = useLocation().pathname;
+  const [hiddenPopup, setHiddenPopup] = useState(false);
 
   //hàm xử lý lhi người dùng log out
   const handleLogOut = () => {
@@ -32,10 +35,30 @@ const BoxRight = () => {
     navigate("/log-in");
   };
 
+  //hàm xử lý khi bật tắt popup
+  const handleTurnPopup = (value) => {
+    setHiddenPopup(value);
+  };
+
+  console.log(hiddenPopup);
+
   return (
     <div className="box_right_header">
+      {hiddenPopup && (
+        <div className="box_popup">
+          <PopupSearchHomePage handleTurnPopup={handleTurnPopup} />
+        </div>
+      )}
+
       <div className="search">
-        <i className="fa-solid fa-magnifying-glass"></i>
+        <input
+          type="text"
+          placeholder="Search..."
+          className={`input_search ${hiddenPopup ? "active" : ""}`}
+        />
+        <div className="icon" onClick={() => handleTurnPopup(true)}>
+          <i className="fa-solid fa-magnifying-glass"></i>
+        </div>
       </div>
 
       {path !== "/log-in" && path !== "/register" && (
@@ -71,8 +94,12 @@ const BoxRight = () => {
             <label htmlFor="optionAccount" className="layout"></label>
 
             <ul className="option_account">
-              <li className="desc item">Profile</li>
-              <li className="desc item">My Oder</li>
+              <Link to="/profile-user" className="desc item">
+                Profile
+              </Link>
+              <Link to={"/orders-of-user"} className="desc item">
+                My Oder
+              </Link>
 
               {userLogged.role === "admin" && (
                 <Link to="/admin-page" className="desc item">

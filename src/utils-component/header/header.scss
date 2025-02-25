@@ -4,26 +4,41 @@
 
 @import "./box-right/boxRight.scss";
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 50px;
+.box_header {
   position: sticky;
   top: 0;
+  left: 0;
+  right: 0;
   margin-bottom: 30px;
   background-color: $white;
   z-index: 100;
 
-  .logo_of_page {
-    width: 30%;
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+
+    .logo_of_page {
+      width: 30%;
+    }
+
+    .nav_bar_header {
+      width: 30%;
+    }
+
+    .box_right_header {
+      width: 40%;
+    }
   }
 
-  .nav_bar_header {
-    width: 30%;
-  }
-
-  .box_right_header {
-    width: 40%;
+  .bgc_header {
+    width: 4000px;
+    height: 50px;
+    background-color: $white;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+    transform: translateX(-300px);
   }
 }

@@ -125,11 +125,19 @@
             height: 200px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
             margin-top: 20px;
             overflow-y: scroll;
             padding: 10px;
             border: 1px solid#ccc;
+
+            .desc {
+              cursor: pointer;
+              padding: 3px 0;
+
+              &:hover {
+                color: $dark-pink;
+              }
+            }
           }
         }
       }

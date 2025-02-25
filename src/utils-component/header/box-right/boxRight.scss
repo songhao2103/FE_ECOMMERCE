@@ -3,21 +3,47 @@
   align-items: center;
   gap: 30px;
   justify-content: end;
+  position: relative;
+
+  .box_popup {
+    position: absolute;
+    top: 100%;
+  }
 
   .desc {
     @include desc-black;
   }
 
   .search {
+    position: relative;
+    background-color: rebeccapurple;
+
     .icon {
       position: absolute;
-      right: 0px;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
       cursor: pointer;
-      font-size: 2rem;
+      font-size: 1.8rem;
 
       &:hover {
         color: $dark-pink;
       }
+    }
+
+    .input_search {
+      display: none;
+      padding: 7px;
+      border: 1px solid #ccc;
+      width: 200px;
+
+      &:focus {
+        border-color: $black;
+      }
+    }
+
+    .input_search.active {
+      display: block;
     }
   }
 
@@ -82,6 +108,7 @@
       width: 150px;
       border-radius: 10px;
       z-index: 100;
+      flex-direction: column;
 
       .item {
         cursor: pointer;
@@ -106,7 +133,7 @@
       display: none;
 
       &:checked ~ .option_account {
-        display: block;
+        display: flex;
       }
 
       &:checked ~ .layout {

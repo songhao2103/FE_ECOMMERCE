@@ -1,4 +1,5 @@
 @import "./add-product/addProduct.scss";
+@import "./store-order-list/storeOdersList.scss";
 
 .store_page {
   .nav_bar_store_page {
@@ -44,6 +45,8 @@
       border-radius: 10px;
       z-index: 100;
       border: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
 
       .item {
         cursor: pointer;

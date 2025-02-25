@@ -128,17 +128,16 @@ const ProductDetail = () => {
         })
       );
     } else {
-      //kiểm tra trùng lặp
-      const isDuplicate = cart.products.find(
-        (productOnCart) => productOnCart.productId === product._id
-      );
+      if (cart?.products?.length === 0) {
+        //kiểm tra trùng lặp
+        const isDuplicate = cart.products.find(
+          (productOnCart) => productOnCart.productId === product._id
+        );
 
-      console.log(cart.products);
-      console.log(product._id);
-
-      if (isDuplicate) {
-        dispatch(showToast({ message: "Sản phẩm đã có trong giỏ hàng!!" }));
-        return;
+        if (isDuplicate) {
+          dispatch(showToast({ message: "Sản phẩm đã có trong giỏ hàng!!" }));
+          return;
+        }
       }
 
       //nếu đã đăng nhập gọi API để thêm sản phẩm vào giỏ hàng

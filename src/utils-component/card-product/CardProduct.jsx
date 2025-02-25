@@ -7,7 +7,7 @@ const CardProduct = ({ product, value }) => {
   return (
     <div className="card_product">
       <div className="box_image">
-        <Link to={`product-detail/${product._id}`} className="image">
+        <Link to={`/product-detail/${product._id}`} className="image">
           <img src={product.images[0].url} alt="" />
         </Link>
         <p className="sale desc">{`-${product.discount}%`}</p>

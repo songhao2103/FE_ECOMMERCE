@@ -7,9 +7,14 @@ import { formatCurrencyVND } from "../../../utils/format/format";
 import PopupInfoUserAtOrder from "../popup-info-user-at-order/PopupInfoUserAtOrder";
 import Toast from "../../../utils-component/toast/Toast";
 import { showToast } from "../../../redux-toolkit/redux-slice/toastSlice";
-import { updateCart } from "../../../redux-toolkit/redux-slice/userLogged";
 
-const OrderPage = ({ productsOnOrderPage, userLogged }) => {
+const OrderPage = ({
+  productsOnOrderPage,
+  userLogged,
+  handleTurnOrderPage,
+  updateCartOnRedux,
+  handleUpdateProductsOfCart,
+}) => {
   const [ordersList, setOrdersList] = useState([]);
   const [turnPopup, setTurnPopup] = useState(false);
   const dispatch = useDispatch();
@@ -17,9 +22,9 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
   const [currentOrderAddress, setCurrentOrderAddress] = useState({
     userName: userLogged.userName,
     phoneNumber: userLogged.phoneNumber || "",
-    cityOrProvince: { name: userLogged.address?.cityOrProvince || "" },
-    district: { name: userLogged.address?.district || "" },
-    wardOrCommune: { name: userLogged.address?.wardOrCommune || "" },
+    cityOrProvince: userLogged.address?.cityOrProvince || "",
+    district: userLogged.address?.district || "",
+    wardOrCommune: userLogged.address?.wardOrCommune || "",
     specificAddress: userLogged.address?.specific || "",
   });
 
@@ -235,7 +240,10 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
 
           //cập nhật lại giỏ hàng ở redux
           const data = await response.json();
-          dispatch(updateCart(data));
+          const productIds = data.products.map((product) => product.productId);
+          handleUpdateProductsOfCart(productIds);
+          updateCartOnRedux(data);
+          handleTurnOrderPage(false);
         }
       } catch (error) {
         console.log("Không tạo được order!!  " + error.message);
@@ -256,7 +264,10 @@ const OrderPage = ({ productsOnOrderPage, userLogged }) => {
       )}
 
       <div className="top">
-        <button className="btn_dark_pink">
+        <button
+          className="btn_dark_pink"
+          onClick={() => handleTurnOrderPage(false)}
+        >
           <i className="fa-solid fa-arrow-left"></i>
         </button>
         <p className="title_36">Order</p>

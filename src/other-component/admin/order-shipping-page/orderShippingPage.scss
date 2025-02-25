@@ -1,0 +1,210 @@
+.order_shipping_page {
+  .top_page {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #ccc;
+
+    .box_sort {
+      display: flex;
+      gap: 20px;
+
+      .button_sort {
+        padding: 5px 16px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+
+        &:hover {
+          color: $dark-pink;
+          border-color: $dark-pink;
+        }
+
+        &:active {
+          transform: scale(0.97);
+        }
+      }
+      .button_sort.active {
+        background-color: $dark-pink;
+        color: $white;
+      }
+    }
+
+    .box_search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+
+      input {
+        padding: 5px;
+        border-bottom: 2px solid #ccc;
+        width: 300px;
+
+        &:focus {
+          border-color: $black;
+        }
+      }
+
+      .icon {
+        cursor: pointer;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+
+        &:hover {
+          color: $dark-pink;
+        }
+      }
+    }
+  }
+
+  .desc {
+    @include desc-black;
+  }
+
+  .orders_list {
+    .content_order_list {
+      display: flex;
+      flex-direction: column;
+      gap: 50px;
+      margin-top: 30px;
+    }
+
+    .box_order {
+      padding: 20px;
+      padding-bottom: 20px;
+      border: 1px solid #ccc;
+
+      span {
+        margin-left: 10px;
+      }
+
+      .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #e4e3e3;
+        padding-bottom: 10px;
+
+        .box_right {
+          display: flex;
+          align-items: center;
+          gap: 30px;
+        }
+      }
+
+      .products_list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+
+        .box_product {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          .box_image {
+            width: 12%;
+            img {
+              width: 80%;
+            }
+          }
+
+          .box_content {
+            width: 85%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .title_20 {
+              @include title-20;
+            }
+          }
+
+          .box_right {
+            .box_price {
+              display: flex;
+              flex-direction: column-reverse;
+
+              .old_price {
+                color: $dark-gray;
+                text-decoration: line-through;
+              }
+
+              .new_price {
+                color: $dark-pink;
+              }
+            }
+          }
+        }
+      }
+
+      .bottom_order {
+        margin-top: 30px;
+        display: flex;
+        justify-content: end;
+
+        .info_order {
+          width: 50%;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+
+          .box_code {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            &:hover {
+              .copy {
+                opacity: 1;
+              }
+            }
+
+            .code {
+              color: $dark-pink;
+            }
+
+            .copy {
+              padding: 5px 10px;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+              position: absolute;
+              top: 20px;
+              left: 50px;
+              background-color: $white;
+              opacity: 0;
+              transition: 0.5s;
+              cursor: pointer;
+
+              &:hover {
+                color: $dark-pink;
+              }
+            }
+          }
+        }
+
+        .box_right {
+          display: flex;
+          flex-direction: column;
+          width: 23%;
+          gap: 10px;
+          min-width: 220px;
+          padding-left: 50px;
+
+          .btn_dark_pink {
+            @include btn-dark-pink;
+            padding: 5px 15px;
+            width: 100px;
+            margin-left: 90px;
+            margin-top: 20px;
+          }
+        }
+      }
+    }
+  }
+}

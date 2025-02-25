@@ -1,0 +1,308 @@
+.store_order_list_page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .top_page {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    width: 100%;
+
+    .desc {
+      @include desc-black;
+    }
+
+    .box_left {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 55%;
+
+      .option_select {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+
+        .desc {
+          cursor: pointer;
+
+          &:hover {
+            color: $dark-pink;
+          }
+        }
+
+        .desc.active {
+          color: $dark-pink;
+          border-bottom: 2px solid $dark-pink;
+          padding-bottom: 2px;
+        }
+      }
+
+      .box_sort {
+        display: flex;
+        gap: 15px;
+        position: relative;
+
+        .sort {
+          cursor: pointer;
+
+          &:hover {
+            color: $dark-pink;
+
+            .desc {
+              color: $dark-pink;
+            }
+          }
+        }
+        input {
+          display: none;
+        }
+
+        span {
+          padding: 0 5px;
+        }
+
+        .box_option_sort {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          padding: 5px 15px 5px 10px;
+          border: 1px solid #ccc;
+          background-color: $white;
+          position: absolute;
+          top: 20px;
+          display: none;
+          z-index: 1000;
+          width: 100px;
+          border-radius: 5px;
+
+          .desc {
+            cursor: pointer;
+
+            &:hover {
+              color: $dark-pink;
+            }
+          }
+        }
+
+        .layout_sort_option {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 999;
+          display: none;
+        }
+
+        input:checked ~ .layout_sort_option {
+          display: block;
+        }
+        input:checked ~ .box_option_sort {
+          display: flex;
+        }
+      }
+    }
+
+    .box_right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .btn_dark_pink {
+        @include btn-dark-pink;
+        padding: 5px 20px;
+
+        &:nth-child(3) {
+          margin-left: 10px;
+        }
+      }
+
+      .btn_dark_pink.no_drop {
+        background-color: $white;
+        color: $black;
+        cursor: no-drop;
+        border: 1px solid #ccc;
+
+        &:hover {
+          background-color: $white;
+        }
+
+        &:active {
+          transform: scale(1);
+        }
+      }
+    }
+  }
+
+  .list_orders_of_store {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 90%;
+
+    .desc {
+      @include desc-black;
+    }
+    span {
+      margin-left: 10px;
+    }
+
+    .box_order {
+      display: flex;
+      flex-direction: column;
+      border: 3px solid #f0eeee;
+      padding: 20px;
+      border-radius: 10px;
+      position: relative;
+
+      .box_list_products_of_order {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+        border-bottom: 1px solid #e8e8e8;
+        padding-bottom: 20px;
+
+        .box_product {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+
+          .box_image {
+            width: 13%;
+
+            img {
+              width: 80%;
+            }
+          }
+
+          .box_info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 70%;
+
+            .title_20 {
+              @include title-20;
+            }
+
+            .box_price {
+              display: flex;
+              align-items: center;
+              gap: 20px;
+
+              .old_price {
+                color: $dark-gray;
+                text-decoration: line-through;
+              }
+
+              .new_price {
+                color: $dark-pink;
+              }
+            }
+          }
+
+          .box_right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 200px;
+          }
+        }
+      }
+
+      .bottom_order {
+        margin-top: 30px;
+        display: flex;
+        justify-content: end;
+
+        .info_order {
+          width: 50%;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+
+          .box_code {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            &:hover {
+              .copy {
+                opacity: 1;
+              }
+            }
+
+            .code {
+              color: $dark-pink;
+            }
+
+            .copy {
+              padding: 5px 10px;
+              border: 1px solid #ccc;
+              border-radius: 5px;
+              position: absolute;
+              top: 20px;
+              left: 50px;
+              background-color: $white;
+              opacity: 0;
+              transition: 0.5s;
+              cursor: pointer;
+
+              &:hover {
+                color: $dark-pink;
+              }
+            }
+          }
+        }
+
+        .box_right {
+          display: flex;
+          flex-direction: column;
+          width: 23%;
+          gap: 10px;
+          min-width: 220px;
+
+          .box_button {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+
+            .btn_dark_pink {
+              @include btn-dark-pink;
+              padding: 5px 20px;
+            }
+
+            .refuse {
+              background-color: #fff;
+              color: $black;
+              border: 1px solid #ccc;
+
+              &:hover {
+                color: $white;
+                background-color: #ccc;
+              }
+            }
+          }
+        }
+      }
+
+      .box_input_checkbox {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+
+        input {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+}

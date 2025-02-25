@@ -7,6 +7,9 @@ import HomePage from "../components/home-page/HomePage";
 import AdminPage from "../other-component/admin/AdminPage";
 import ProductDetail from "../components/product-detail/ProductDetail";
 import Cart from "../components/cart/Cart";
+import ProductList from "../components/products-list/ProductList";
+import OrderOfUser from "../components/order-of-user/OrderOfUser";
+import ProfileUser from "../components/profile-user/ProfileUser";
 
 const createAppRouter = () => {
   return createBrowserRouter([
@@ -49,6 +52,18 @@ const createAppRouter = () => {
           path: "/cart",
           element: <Cart />,
         },
+
+        {
+          path: "/products-list",
+          element: <ProductList />,
+        },
+
+        {
+          path: "/orders-of-user",
+          element: <OrderOfUser />,
+        },
+
+        { path: "/profile-user", element: <ProfileUser /> },
       ],
     },
   ]);

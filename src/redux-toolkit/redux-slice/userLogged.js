@@ -19,8 +19,11 @@ const userLoggedSlice = createSlice({
     //payload của action là 1 userLogged mới, có thể là lúc người dùng đăng nhập hoặc khi người dùng cập nhật thông tin tài khoản
     updateUserLogged: (state, action) => {
       state.userLogged = action.payload.user;
-      state.cart = action.payload.cart;
+
+      state.cart = action.payload.cart ? action.payload.cart : state.cart;
     },
+
+    //cập nhật mỗi
 
     //updateCart
     updateCart: (state, action) => {
