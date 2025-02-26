@@ -1,0 +1,26 @@
+.scroll_to_top {
+  .button_scroll {
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    padding: 10px 15px;
+    @include desc-black;
+    background-color: $dark-pink;
+    color: $white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 100;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+
+    font-size: 2.5rem;
+
+    &:hover {
+      background-color: #f36565;
+    }
+  }
+}

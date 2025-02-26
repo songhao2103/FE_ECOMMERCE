@@ -8,14 +8,93 @@
     right: 0;
     left: 0;
     bottom: 0;
-    top: 100px;
-    background-color: rgba($color: #000000, $alpha: 0.6);
+    top: 0px;
     z-index: 999;
   }
 
   .content_page {
-    background-color: pink;
+    background-color: #f4f4f4;
     z-index: 1000;
     width: 700px;
+    padding: 20px;
+    border: 1px solid #ccc;
+
+    .box_search_history {
+      .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+
+        .box_right {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          cursor: pointer;
+
+          &:hover {
+            .desc,
+            .icon {
+              color: $dark-pink;
+            }
+          }
+        }
+      }
+
+      .list_history_searchs {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding-left: 20px;
+        max-height: 200px;
+        overflow-y: scroll;
+
+        .value {
+          cursor: pointer;
+
+          &:hover {
+            color: $dark-pink;
+          }
+        }
+      }
+    }
+
+    .box_list_product {
+      margin-top: 30px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+
+      .list_product {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-top: 10px;
+        row-gap: 20px;
+
+        .box_product {
+          width: 48%;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+
+          &:hover {
+            .desc {
+              color: $dark-pink;
+            }
+          }
+
+          .box_image {
+            width: 20%;
+
+            img {
+              width: 90%;
+            }
+          }
+        }
+      }
+    }
   }
 }

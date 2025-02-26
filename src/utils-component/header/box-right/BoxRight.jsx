@@ -4,6 +4,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import urlAvatarDefault from "../../../config/avatarDefault";
 import { updateUserLogged } from "../../../redux-toolkit/redux-slice/userLogged";
 import PopupSearchHomePage from "../../../components/popup-search-home-page/PopupSearchHomePage";
+import { useDebounce } from "../../../utils/custom-hook/customHook";
+import { updateSearchValue } from "../../../redux-toolkit/redux-slice/searchSlice";
 
 const BoxRight = () => {
   const dispatch = useDispatch();
@@ -16,8 +18,17 @@ const BoxRight = () => {
       ? state.userLoggedSlice.cart?.products?.length
       : null
   );
+  const [valueSearch, setValueSearch] = useState(""); //lưu giá trị của ô input search
+  const debouncedValueSearch = useDebounce(valueSearch, 2000);
+
   const path = useLocation().pathname;
   const [hiddenPopup, setHiddenPopup] = useState(false);
+  //lấy danh sách lịch sử tìm kiếm của người dùng từ localStorage
+  const [historySearchs, setHistorySearchs] = useState(() => {
+    const historySearchs =
+      JSON.parse(localStorage.getItem("historySearchs")) || [];
+    return historySearchs;
+  });
 
   //hàm xử lý lhi người dùng log out
   const handleLogOut = () => {
@@ -40,13 +51,61 @@ const BoxRight = () => {
     setHiddenPopup(value);
   };
 
-  console.log(hiddenPopup);
+  //hàm theo dõi thay đổi của input search
+  const handleChangeInputSearch = (e) => {
+    setValueSearch(e.target.value);
+  };
+
+  //hàm xử lý khi người dùng xóa lịch sử tìm kiếm
+  const handleDeleteAllHistorySearch = () => {
+    setHistorySearchs([]);
+    //cập nhật localStorage
+    localStorage.setItem("historySearchs", JSON.stringify([]));
+  };
+
+  //hàm xử lý khi người dùng click tìm kiếm
+  const handleConfirmSearch = () => {
+    if (!debouncedValueSearch) {
+      handleTurnPopup(false);
+      return;
+    }
+    //thêm mới gia trị tìm kiếm vào storage
+    const currentHistorySearch = JSON.parse(
+      localStorage.getItem("historySearchs")
+    );
+
+    setHistorySearchs([debouncedValueSearch, ...historySearchs]);
+
+    localStorage.setItem(
+      "historySearchs",
+      JSON.stringify([debouncedValueSearch, ...currentHistorySearch])
+    );
+
+    //cập nhật ở redux
+    dispatch(updateSearchValue(debouncedValueSearch));
+
+    navigate("/get-products-of-search");
+    handleTurnPopup(false);
+  };
+
+  //hàm xử lý khi người dùng click vào historyValue
+  const handleClickHistoryValue = (historyValue) => {
+    dispatch(updateSearchValue(historyValue));
+    handleTurnPopup(false);
+    navigate("/get-products-of-search");
+  };
 
   return (
     <div className="box_right_header">
       {hiddenPopup && (
         <div className="box_popup">
-          <PopupSearchHomePage handleTurnPopup={handleTurnPopup} />
+          <PopupSearchHomePage
+            handleTurnPopup={handleTurnPopup}
+            debouncedValueSearch={debouncedValueSearch}
+            handleDeleteAllHistorySearch={handleDeleteAllHistorySearch}
+            historySearchs={historySearchs}
+            handleClickHistoryValue={handleClickHistoryValue}
+          />
         </div>
       )}
 
@@ -55,8 +114,14 @@ const BoxRight = () => {
           type="text"
           placeholder="Search..."
           className={`input_search ${hiddenPopup ? "active" : ""}`}
+          onChange={handleChangeInputSearch}
         />
-        <div className="icon" onClick={() => handleTurnPopup(true)}>
+        <div
+          className="icon"
+          onClick={() =>
+            hiddenPopup ? handleConfirmSearch() : handleTurnPopup(true)
+          }
+        >
           <i className="fa-solid fa-magnifying-glass"></i>
         </div>
       </div>

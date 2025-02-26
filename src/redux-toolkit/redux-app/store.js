@@ -4,6 +4,7 @@ import statusGlobalReducer from "../redux-slice/statusGlobal";
 import toastReducer from "../redux-slice/toastSlice";
 import popupAlertReducer from "../redux-slice/popupAlertSlice";
 import orderReducer from "../redux-slice/orderSlice";
+import searchReducer from "../redux-slice/searchSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     toastSlice: toastReducer,
     popupAlertSlice: popupAlertReducer,
     orderSlice: orderReducer,
+    searchSlice: searchReducer,
   },
 });

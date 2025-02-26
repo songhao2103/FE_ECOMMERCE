@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import baseUrl from "../../config/baseUrl";
 
-const PopupSearchHomePage = ({ handleTurnPopup }) => {
-  //lấy danh sách lịch sử tìm kiếm của người dùng từ localStorage
-  const historySearchs =
-    JSON.parse(localStorage.getItem("historySearch")) || [];
+const PopupSearchHomePage = ({
+  handleTurnPopup,
+  debouncedValueSearch,
+  historySearchs,
+  handleDeleteAllHistorySearch,
+  handleClickHistoryValue,
+}) => {
+  const navigate = useNavigate();
 
   const [productsList, setProductsList] = useState([]);
-  const [valueSearch, setValueSearch] = useState("");
 
   //gọi API để lấy danh sách sản phẩm
   useEffect(() => {
@@ -19,8 +23,8 @@ const PopupSearchHomePage = ({ handleTurnPopup }) => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              body: JSON.stringify({ valueSearch, historySearchs }),
             },
+            body: JSON.stringify({ debouncedValueSearch, historySearchs }),
           }
         );
 
@@ -29,6 +33,7 @@ const PopupSearchHomePage = ({ handleTurnPopup }) => {
         }
 
         const data = await response.json();
+
         setProductsList(data);
       } catch (error) {
         console.log(
@@ -38,29 +43,66 @@ const PopupSearchHomePage = ({ handleTurnPopup }) => {
       }
     };
     fetchData();
-  }, [valueSearch]);
+  }, [debouncedValueSearch]);
+
+  //hàm xử lý khi người dùng click vào sản phẩm
+  const handleClickProduct = (productId) => {
+    //nếu người dùng có nhập tìm kiếm rồi mới click vào sản phẩm thì thêm giá trị tìm kiếm vào localStorage
+    if (debouncedValueSearch) {
+      const newHistorySearch = [...newHistorySearch, debouncedValueSearch];
+      localStorage.setItem("historySearchs", JSON.stringify(newHistorySearch));
+    }
+
+    navigate(`/product-detail/${productId}`);
+    handleTurnPopup(false);
+  };
 
   return (
     <div className="popup_search_home_page">
       <div className="bgc_popup" onClick={() => handleTurnPopup(false)}></div>
       <div className="content_page">
-        <div className="box_search_history">
-          <div className="top">
-            <p className="desc">Search history</p>
-            <div className="box_right">
-              <p className="desc">Delete all</p>
-            </div>
-          </div>
-
-          <div className="list_history_searchs">
-            {historySearchs.map((value, index) => (
-              <div className="box_value" key={index}>
-                <p className="desc">{value}</p>
+        {historySearchs.length > 0 && (
+          <div className="box_search_history">
+            <div className="top">
+              <p className="desc">Search history</p>
+              <div className="box_right" onClick={handleDeleteAllHistorySearch}>
+                <p className="desc">Delete all</p>
                 <div className="icon">
-                  <i className="fa-solid fa-xmark"></i>
+                  <i className="fa-solid fa-trash-can"></i>
                 </div>
               </div>
-            ))}
+            </div>
+
+            <div className="list_history_searchs">
+              {historySearchs.map((value, index) => (
+                <p
+                  className="desc value"
+                  key={index}
+                  onClick={() => handleClickHistoryValue(value)}
+                >
+                  {value}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="box_list_product">
+          <p className="desc title">Product list</p>
+          <div className="list_product">
+            {productsList.length > 0 &&
+              productsList.map((product) => (
+                <div
+                  className="box_product"
+                  key={product._id}
+                  onClick={() => handleClickProduct(product._id)}
+                >
+                  <div className="box_image">
+                    <img src={product.images[0].url} alt="" />
+                  </div>
+                  <p className="desc">{product.productName}</p>
+                </div>
+              ))}
           </div>
         </div>
       </div>
