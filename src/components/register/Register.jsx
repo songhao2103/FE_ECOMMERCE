@@ -113,8 +113,8 @@ const Register = () => {
       const data = await response.json();
 
       if (!data.success) {
-        console.log(data.errors);
         setErrors(data.errors);
+        setFormData(data.formData);
       } else {
         navigate("/log-in");
         dispatch(showToast({ message: "Đăng ký tài khoản thành công!!" }));
@@ -125,6 +125,8 @@ const Register = () => {
       setIsLoading(false);
     }
   };
+
+  console.log(formData);
 
   if (isLoading) return <Loader />;
 

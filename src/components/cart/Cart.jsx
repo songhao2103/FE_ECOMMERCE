@@ -227,11 +227,13 @@ const Cart = () => {
 
   //hàm cập nhật lại danh sách sản phẩm có trong giỏ hàng
   const handleUpdateProductsOfCart = (productIds) => {
-    const newProductsOfCart = [...productsOfCart].filter(
-      (product) => !productIds.includes(product.productId)
+    const newProductsOfCart = [...productsOfCart].filter((product) =>
+      productIds.includes(product.productId)
     );
+
     setProductsOfCart(newProductsOfCart);
   };
+
   if (isLoading && productsOfCart.length === 0) return <Loader />;
 
   if (isOrder)

@@ -23,6 +23,15 @@ const BoxRight = () => {
 
   const path = useLocation().pathname;
   const [hiddenPopup, setHiddenPopup] = useState(false);
+
+  //hàm xử lý khi người dùng click vào giỏ hàng
+  const handleClickCartIcon = () => {
+    if (!userLogged) {
+      navigate("/log-in");
+    } else {
+      navigate("/cart");
+    }
+  };
   //lấy danh sách lịch sử tìm kiếm của người dùng từ localStorage
   const [historySearchs, setHistorySearchs] = useState(() => {
     const historySearchs =
@@ -95,6 +104,11 @@ const BoxRight = () => {
     navigate("/get-products-of-search");
   };
 
+  //hàm xử lý khi người dùng click vào các options
+  const handleClickOption = (path) => {
+    navigate(path);
+  };
+
   return (
     <div className="box_right_header">
       {hiddenPopup && (
@@ -131,12 +145,12 @@ const BoxRight = () => {
           <div className="icon wish_list">
             <i className="fa-regular fa-heart"></i>
           </div>
-          <Link to="/cart" className="icon cart">
+          <div className="icon cart" onClick={handleClickCartIcon}>
             <i className="fa-solid fa-cart-shopping"></i>
             {quantityProduct > 0 && (
               <p className="desc quantity">{quantityProduct}</p>
             )}
-          </Link>
+          </div>
         </div>
       )}
 
@@ -159,28 +173,49 @@ const BoxRight = () => {
             <label htmlFor="optionAccount" className="layout"></label>
 
             <ul className="option_account">
-              <Link to="/profile-user" className="desc item">
+              <label
+                htmlFor="optionAccount"
+                onClick={() => handleClickOption("/profile-user")}
+                className="desc item"
+              >
                 Profile
-              </Link>
-              <Link to={"/orders-of-user"} className="desc item">
+              </label>
+
+              <label
+                htmlFor="optionAccount"
+                onClick={() => handleClickOption("/orders-of-user")}
+                className="desc item"
+              >
                 My Oder
-              </Link>
+              </label>
 
               {userLogged.role === "admin" && (
-                <Link to="/admin-page" className="desc item">
+                <label
+                  htmlFor="optionAccount"
+                  onClick={() => handleClickOption("/admin-page")}
+                  className="desc item"
+                >
                   Admin Page
-                </Link>
+                </label>
               )}
 
               {userLogged.role === "store" && (
-                <Link to="/store-page" className="desc item">
+                <label
+                  htmlFor="optionAccount"
+                  onClick={() => handleClickOption("/store-page")}
+                  className="desc item"
+                >
                   Store Page
-                </Link>
+                </label>
               )}
 
-              <li className="desc item" onClick={handleLogOut}>
+              <label
+                htmlFor="optionAccount"
+                className="desc item"
+                onClick={handleLogOut}
+              >
                 Log Out
-              </li>
+              </label>
             </ul>
           </div>
         ) : (

@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import baseUrl from "../../config/baseUrl";
-import Loader from "../../utils-component/loader/Loader";
 import { capitalizeFirstLetter } from "../../utils/format/format";
 import CardProduct from "../../utils-component/card-product/CardProduct";
 
 const limit = 8;
 const ProductList = () => {
-  const [isLoading, setIsLoading] = useState(true);
   //lưu danh sách các lựa chọn filter
   const [typeFilter, setTypeFilter] = useState({
     store: [],
@@ -53,7 +51,6 @@ const ProductList = () => {
   //gọi API để lấy danh sách sản phẩm
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
       try {
         const response = await fetch(
           baseUrl + `/product/get-products?page=${currentPage}&limit=${limit}`,
@@ -80,8 +77,6 @@ const ProductList = () => {
         setTotalQuantity(data.totalQuantity);
       } catch (error) {
         console.log("Không lấy được danh sách sản phẩm!!", error.message);
-      } finally {
-        setIsLoading(false);
       }
     };
     fetchData();
@@ -137,10 +132,6 @@ const ProductList = () => {
       setCurrentPage(newCurrentPage);
     }
   };
-
-  if (isLoading) {
-    return <Loader />;
-  }
 
   return (
     <div className="products_list_page">
