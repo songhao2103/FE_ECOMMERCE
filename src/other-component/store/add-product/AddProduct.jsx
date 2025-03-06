@@ -15,7 +15,6 @@ const AddProduct = () => {
     describe: "",
     price: "",
     discount: "",
-    company: "",
     deviceType: "",
     defaultImage: null,
     blackImage: null,
@@ -33,6 +32,7 @@ const AddProduct = () => {
   const userLogged = useSelector((state) => state.userLoggedSlice.userLogged);
 
   const [isLoading, setIsLoading] = useState(false);
+
   //hàm theo dõi sự thay đổi của form data
   const handleChangeFormData = (e) => {
     const { name, value, type, files } = e.target;
@@ -54,7 +54,6 @@ const AddProduct = () => {
   };
 
   //hàm submit form data
-
   const handleSubmitFormData = async (e) => {
     e.preventDefault();
 
@@ -68,7 +67,6 @@ const AddProduct = () => {
       !formData.describe ||
       !formData.price ||
       !formData.discount ||
-      !formData.company ||
       !formData.deviceType ||
       !formData.totalQuantity
     ) {
@@ -115,7 +113,6 @@ const AddProduct = () => {
       describe: formData.describe,
       price: formData.price,
       discount: formData.discount,
-      company: formData.company,
       deviceType: formData.deviceType,
       totalQuantity: formData.totalQuantity,
       blackQuantity: formData.blackQuantity ? formData.blackQuantity : 0,
@@ -172,7 +169,6 @@ const AddProduct = () => {
         describe: "",
         price: "",
         discount: "",
-        company: "",
         deviceType: "",
         defaultImage: null,
         blackImage: null,
@@ -203,7 +199,6 @@ const AddProduct = () => {
 
   return (
     <div className="add_product_store_page">
-      <Toast />
       <form action="" onSubmit={handleSubmitFormData}>
         <div className="column_1">
           <label htmlFor="productName" className="desc">
@@ -255,28 +250,6 @@ const AddProduct = () => {
           />
 
           <div className="select">
-            <label htmlFor="company" className="desc">
-              Company:
-            </label>
-            <select
-              name="company"
-              id="company"
-              onChange={handleChangeFormData}
-              value={formData.company}
-            >
-              <option value="" disabled selected>
-                Company
-              </option>
-              <option value="apple">Apple</option>
-              <option value="samsung">Samsung</option>
-              <option value="oppo">Oppo</option>
-              <option value="asus">Asus</option>
-              <option value="dell">Dell</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-
-          <div className="select">
             <label htmlFor="deviceType" className="desc">
               Device type:
             </label>
@@ -294,6 +267,7 @@ const AddProduct = () => {
               <option value="tablet">Tablet</option>
               <option value="accessories">Accessories</option>
               <option value="audio">Audio equipment</option>
+              <option value="camera">Camera</option>
               <option value="other">Other</option>
             </select>
           </div>

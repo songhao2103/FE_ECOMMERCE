@@ -75,6 +75,8 @@ const Register = () => {
     //kiểm tra password
     if (!password) {
       newErrors.password = "Password không được để trống!";
+    } else if (password.length < 6) {
+      newErrors.password = "Password phải nhiều hơn 6 ký tự!";
     } else {
       newErrors.password = "";
     }
@@ -114,7 +116,6 @@ const Register = () => {
 
       if (!data.success) {
         setErrors(data.errors);
-        setFormData(data.formData);
       } else {
         navigate("/log-in");
         dispatch(showToast({ message: "Đăng ký tài khoản thành công!!" }));
@@ -126,9 +127,9 @@ const Register = () => {
     }
   };
 
-  console.log(formData);
-
   if (isLoading) return <Loader />;
+
+  console.log(formData);
 
   return (
     <div className="register">
@@ -153,6 +154,7 @@ const Register = () => {
             id="userName"
             placeholder="Enter your name"
             onChange={handleChangeInputForm}
+            value={formData.userName}
           />
           {!!errors.userName && <div className="error">{errors.userName}</div>}
 
@@ -166,6 +168,7 @@ const Register = () => {
             id="email"
             placeholder="Enter your email"
             onChange={handleChangeInputForm}
+            value={formData.email}
           />
           {!!errors.email && <div className="error">{errors.email}</div>}
 
@@ -180,6 +183,7 @@ const Register = () => {
               id="password"
               placeholder="Enter your password"
               onChange={handleChangeInputForm}
+              value={formData.password}
             />
             <div
               className="box_eye"
@@ -204,6 +208,7 @@ const Register = () => {
               id="rePassword"
               placeholder="Enter your re-password"
               onChange={handleChangeInputForm}
+              value={formData.rePassword}
             />
             <div
               className="box_eye"

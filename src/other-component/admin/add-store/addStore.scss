@@ -16,6 +16,11 @@
     padding: 20px;
     border-radius: 20px;
 
+    .error {
+      color: $dark-pink;
+      margin-top: 10px;
+    }
+
     label {
       margin-bottom: 5px;
       margin-top: 20px;
@@ -34,6 +39,48 @@
     .btn_dark_pink {
       margin-top: 20px;
       @include btn-dark-pink;
+    }
+
+    .box_province_and_city {
+      display: flex;
+      flex-direction: column;
+
+      #provinceOrCity {
+        display: none;
+      }
+
+      #provinceOrCity:checked ~ .list_province_or_cities {
+        display: flex;
+      }
+
+      .value {
+        margin-top: 0;
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        display: inline-block;
+        cursor: pointer;
+      }
+
+      .list_province_or_cities {
+        display: flex;
+        flex-direction: column;
+        height: 200px;
+        overflow-y: scroll;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        display: none;
+
+        .desc {
+          padding: 5px 0;
+          margin: 0;
+          cursor: pointer;
+
+          &:hover {
+            color: $dark-pink;
+          }
+        }
+      }
     }
   }
 }

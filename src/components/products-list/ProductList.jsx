@@ -12,7 +12,7 @@ const ProductList = () => {
   });
   //lưu giá trị của sort
   const [sortValue, setSortValue] = useState({
-    field: "updateAt",
+    field: "updatedAt",
     value: -1,
   });
   //lưu giá trị của filter
@@ -72,6 +72,7 @@ const ProductList = () => {
         }
 
         const data = await response.json();
+        console.log(data.productsl);
 
         setProductsList(data.products);
         setTotalQuantity(data.totalQuantity);

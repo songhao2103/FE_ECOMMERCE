@@ -373,8 +373,6 @@ const ProductConfirm = () => {
 
   return (
     <div className="product_confirm">
-      <Toast />
-
       {/* ===============nav bar================================ */}
       <div className="nav_bar_product_confirm">
         <div className="box_option">

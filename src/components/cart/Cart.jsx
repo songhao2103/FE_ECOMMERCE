@@ -199,10 +199,16 @@ const Cart = () => {
     );
 
     //cập nhật lại state
+
     setProductsOfCart(newProductsOfCart);
 
+    const newProductsOfCartOnDatabase = cart.products.filter(
+      (product) => product.productId !== productId
+    );
+
     //cập nhật lại state ở redux
-    const newCart = { ...cart, products: newProductsOfCart };
+    const newCart = { ...cart, products: newProductsOfCartOnDatabase };
+
     dispatch(updateCart(newCart));
 
     //cập nhật lại giỏ hàng ở database
