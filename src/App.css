@@ -37,3 +37,7 @@ button {
   display: block;
   padding: 10px;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

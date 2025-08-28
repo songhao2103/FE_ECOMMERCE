@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
-import baseUrl from "../../config/baseUrl";
-import { capitalizeFirstLetter } from "../../utils/format/format";
+import { useEffect, useMemo, useState } from "react";
+import { useGetProductList } from "../../services/queries/product.queries";
 import CardProduct from "../../utils-component/card-product/CardProduct";
+import {
+  DEVICE_TYPES,
+  getDeviceLabel,
+  getProductsSortFieldLabel,
+} from "./constance";
 
 const limit = 8;
 const ProductList = () => {
@@ -12,8 +16,8 @@ const ProductList = () => {
   });
   //lưu giá trị của sort
   const [sortValue, setSortValue] = useState({
-    field: "updatedAt",
-    value: -1,
+    field: 5,
+    value: 1,
   });
   //lưu giá trị của filter
   const [filterValue, setFilterValue] = useState({
@@ -24,64 +28,29 @@ const ProductList = () => {
   });
   const [searchValue, setSearchValue] = useState(""); //lưu giá trị của ô input search
   const [currentPage, setCurrentPage] = useState(1); //lưu trang hiện tại
-  const [productsList, setProductsList] = useState([]); //lưu danh sách sản phẩm
-  const [totalQuantity, setTotalQuantity] = useState(0); //tổng số lượng sản phẩm (sau khi filter)
+  const [debounceSearchKey, setDebounceSearchKey] = useState("");
 
-  //gọi API để lấy danh sách type filter
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(baseUrl + "/product/get-type-filter");
-
-        if (!response.ok) {
-          throw new Error("Không lấy được danh sách type filter!!");
-        }
-
-        const data = await response.json();
-        console.log(data);
-
-        setTypeFilter(data);
-      } catch (error) {
-        console.log("Không lấy được danh sách type filter!! ", error.message);
-      }
+  const filters = useMemo(() => {
+    return {
+      DeviceTypes: filterValue.deviceType,
+      SortField: sortValue.field,
+      SortType: sortValue.value,
+      PageIndex: currentPage,
+      PageSize: limit,
+      searchKey: debounceSearchKey,
     };
-    fetchData();
-  }, []);
+  }, [sortValue, filterValue, currentPage, limit, debounceSearchKey]);
 
-  //gọi API để lấy danh sách sản phẩm
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          baseUrl + `/product/get-products?page=${currentPage}&limit=${limit}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              filterValue,
-              sortValue,
-              searchValue,
-            }),
-          }
-        );
+    const handler = setTimeout(() => {
+      setDebounceSearchKey(searchValue);
+    }, [500]);
 
-        if (!response.ok) {
-          throw new Error("Không lấy được danh sách sản phẩm!!");
-        }
+    return () => clearTimeout(handler);
+  }, [searchValue]);
 
-        const data = await response.json();
-        console.log(data.productsl);
-
-        setProductsList(data.products);
-        setTotalQuantity(data.totalQuantity);
-      } catch (error) {
-        console.log("Không lấy được danh sách sản phẩm!!", error.message);
-      }
-    };
-    fetchData();
-  }, [currentPage, filterValue, sortValue, searchValue]);
+  const { data: productData, isPending: pendingGetDataList } =
+    useGetProductList(filters);
 
   //hàm xử lý khi người dùng chọn option filter
   const handleSelectOptionFilter = (name, newValue) => {
@@ -126,10 +95,8 @@ const ProductList = () => {
   const handleTurnPage = (newCurrentPage) => {
     if (
       newCurrentPage >= 1 &&
-      newCurrentPage <= Math.ceil(totalQuantity / limit)
+      newCurrentPage <= Math.ceil(productData?.totalCount / limit)
     ) {
-      console.log("turn");
-
       setCurrentPage(newCurrentPage);
     }
   };
@@ -148,13 +115,15 @@ const ProductList = () => {
                 Device type:
               </label>
               <div className="list_options">
-                {typeFilter.deviceType.map((type) => (
+                {DEVICE_TYPES.map((type) => (
                   <p
                     className="desc"
-                    key={type}
-                    onClick={() => handleSelectOptionFilter("deviceType", type)}
+                    key={type.value}
+                    onClick={() =>
+                      handleSelectOptionFilter("deviceType", type.value)
+                    }
                   >
-                    {capitalizeFirstLetter(type)}
+                    {type.label}
                   </p>
                 ))}
               </div>
@@ -162,7 +131,7 @@ const ProductList = () => {
               <div className="list_option_select">
                 {filterValue.deviceType.map((value) => (
                   <div className="option_select" key={value}>
-                    <p className="desc">{capitalizeFirstLetter(value)}</p>
+                    <p className="desc">{getDeviceLabel(value)}</p>
                     <div
                       className="icon"
                       onClick={() =>
@@ -180,9 +149,7 @@ const ProductList = () => {
                   <label htmlFor="operator_device" className="desc">
                     Type:
                   </label>
-                  <p className="desc">
-                    {capitalizeFirstLetter(filterValue.typeDevice)}
-                  </p>
+                  <p className="desc">{1}</p>
                   <div className="list_type">
                     <label
                       htmlFor="operator_device"
@@ -222,7 +189,7 @@ const ProductList = () => {
                     key={type}
                     onClick={() => handleSelectOptionFilter("store", type)}
                   >
-                    {capitalizeFirstLetter(type)}
+                    {getProductsSortFieldLabel(type)}
                   </p>
                 ))}
               </div>
@@ -231,7 +198,7 @@ const ProductList = () => {
               <div className="list_option_select">
                 {filterValue.store.map((value) => (
                   <div className="option_select" key={value}>
-                    <p className="desc">{capitalizeFirstLetter(value)}</p>
+                    <p className="desc">{getProductsSortFieldLabel(value)}</p>
                     <div
                       className="icon"
                       onClick={() => handleDeleteOptionFilter("store", value)}
@@ -249,7 +216,7 @@ const ProductList = () => {
                     Type:
                   </label>
                   <p className="desc">
-                    {capitalizeFirstLetter(filterValue.typeStore)}
+                    {getProductsSortFieldLabel(filterValue.typeStore)}
                   </p>
                   <div className="list_type">
                     <label
@@ -288,28 +255,28 @@ const ProductList = () => {
                 <label htmlFor="field" className="desc">
                   Field:
                 </label>
-                <p className="desc">{capitalizeFirstLetter(sortValue.field)}</p>
+                <p className="desc">
+                  {getProductsSortFieldLabel(sortValue.field)}
+                </p>
                 <div className="list_options">
                   <label
                     htmlFor="field"
                     className="desc"
-                    onClick={() => handleSelectOptionSort("field", "name")}
+                    onClick={() => handleSelectOptionSort("field", 1)}
                   >
                     Name
                   </label>
                   <label
                     htmlFor="field"
                     className="desc"
-                    onClick={() => handleSelectOptionSort("field", "price")}
+                    onClick={() => handleSelectOptionSort("field", 2)}
                   >
                     Price
                   </label>
                   <label
                     htmlFor="field"
                     className="desc"
-                    onClick={() =>
-                      handleSelectOptionSort("field", "update time")
-                    }
+                    onClick={() => handleSelectOptionSort("field", 5)}
                   >
                     Update time
                   </label>
@@ -375,17 +342,21 @@ const ProductList = () => {
 
         <div className="box_products_list">
           <div className="content">
-            {productsList.length > 0 &&
-              productsList.map((product) => (
-                <CardProduct product={product} key={product._id} />
+            {pendingGetDataList && <p className="text-center">Loading...</p>}
+            {productData?.items?.length > 0 &&
+              !pendingGetDataList &&
+              productData?.items.map((product) => (
+                <CardProduct product={product} key={product.id} />
               ))}
 
-            {productsList.length === 0 && (
-              <p className="desc">Không có sản phẩm nào!!</p>
-            )}
+            {!productData ||
+              !productData.items ||
+              (productData?.items.length === 0 && (
+                <p className="desc">Không có sản phẩm nào!!</p>
+              ))}
           </div>
 
-          {totalQuantity > limit && (
+          {productData?.totalCount > limit && (
             <div className="bottom">
               <div
                 className={`icon ${currentPage <= 1 ? "no_drop" : ""}`}
@@ -394,7 +365,7 @@ const ProductList = () => {
                 <i className="fa-solid fa-chevron-left"></i>
               </div>
               <div className="page_numbers">
-                {new Array(Math.ceil(totalQuantity / limit))
+                {new Array(Math.ceil(productData?.totalCount / limit))
                   .fill(null)
                   .map((_, index) => (
                     <p
@@ -410,7 +381,7 @@ const ProductList = () => {
               </div>
               <div
                 className={`icon ${
-                  currentPage >= Math.ceil(totalQuantity / limit)
+                  currentPage >= Math.ceil(productData?.totalCount / limit)
                     ? "no_drop"
                     : ""
                 }`}

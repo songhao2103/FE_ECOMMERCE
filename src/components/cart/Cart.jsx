@@ -1,218 +1,91 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import Loader from "../../utils-component/loader/Loader";
-import fetchWithAuth from "../../utils/tokenApi/fetchWithAuth";
-import refreshToken from "../../utils/tokenApi/refreshToken";
-import baseUrl from "../../config/baseUrl";
 import {
-  formatCurrencyVND,
-  capitalizeFirstLetter,
-} from "../../utils/format/format";
-import { updateCart } from "../../redux-toolkit/redux-slice/userLogged";
-import { showToast } from "../../redux-toolkit/redux-slice/toastSlice";
+  useGetProductOnCart,
+  useRemoveProductFromCart,
+  useUpdateProductOnCart,
+} from "../../services/queries/cart.queries";
+import Loader from "../../utils-component/loader/Loader";
 import Toast from "../../utils-component/toast/Toast";
+import {
+  capitalizeFirstLetter,
+  formatCurrencyVND,
+} from "../../utils/format/format";
 import OrderPage from "./order-page/OrderPage";
 
 const Cart = () => {
-  const dispatch = useDispatch();
-  const userLogged = useSelector((state) => state.userLoggedSlice.userLogged);
-  const [productsOfCart, setProductsOfCart] = useState([]); //lưu thông tin của các sản phẩm có trong giỏ hàng
-  const [isLoading, setIsLoading] = useState(true);
-  const [productsSelect, setProductSelect] = useState([]); // lưu các sản phẩm mà người dùng chọn
+  const [productOnCart, setProductOnCart] = useState([]); //lưu thông tin của các sản phẩm có trong giỏ hàng
   const [isOrder, setIsOrder] = useState(false);
-  const cart = useSelector((state) => state.userLoggedSlice.cart); //lấy giỏ hàng từ   store của redux
+  const { data: cartData, isPending: pendingGetCartData } =
+    useGetProductOnCart();
+  const { mutate: mtUpdateProductOnCart } = useUpdateProductOnCart();
+  const { mutate: mtRemoveProductFromCart } = useRemoveProductFromCart();
 
-  //lấy thông tin chi tiết của các sản phẩm có trong cửa hàng
   useEffect(() => {
-    if (cart?.products?.length > 0) {
-      const fetchProductsOfCart = async () => {
-        try {
-          setIsLoading(true);
-          let response = await fetchWithAuth(baseUrl + "/cart/products", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(cart),
-          });
-
-          if (response.status === 403) {
-            const refreshTokenResponse = await refreshToken();
-
-            if (!refreshTokenResponse.ok) {
-              throw new Error(
-                "Lỗi khi cập nhật lại accessToken!! " +
-                  refreshTokenResponse.status
-              );
-            }
-          }
-
-          response = await fetchWithAuth(baseUrl + "/cart/products", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(cart),
-          });
-
-          const data = await response.json();
-
-          const productsSelect = new Map(
-            data.products.map((product) => [product._id, false])
-          );
-
-          setProductSelect(productsSelect);
-          setProductsOfCart(data.products);
-        } catch (error) {
-          console.log(
-            "Lỗi khi lấy danh sách sản phẩm của giỏ hàng!! " + error.message
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchProductsOfCart();
-    } else {
-      setIsLoading(false);
+    if (cartData) {
+      setProductOnCart(
+        cartData.map((item) => ({ ...item, isSelected: false }))
+      );
     }
-  }, [cart]);
+  }, [cartData]);
 
   //hàm tính toán lại tổng số tiền của giỏ hàng
   const subtotal = useMemo(() => {
-    let sub = 0;
-    productsOfCart.forEach((product) => {
-      if (productsSelect.get(product._id)) {
-        sub =
-          sub +
-          ((product.price * (100 - product.discount)) / 100) *
-            product.quantityOnCart;
-      }
-    });
-    return sub;
-  }, [productsSelect, productsOfCart]);
-
-  //hàm gọi API để cập nhật lại cart
-  const updateCartOnDatabase = async (newCart) => {
-    try {
-      let response = await fetchWithAuth(baseUrl + "/cart/update-cart", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newCart),
-      });
-
-      if (response.status === 403) {
-        const refreshTokenResponse = await refreshToken();
-
-        if (!refreshTokenResponse.ok) {
-          throw new Error("Không cập nhật được lại access token!!");
-        }
-      }
-
-      response = await fetchWithAuth(baseUrl + "/cart/update-cart", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newCart),
-      });
-    } catch (error) {
-      console.log("Không cập nhật được giỏ hàng!!" + error.message);
-    }
-  };
+    return productOnCart.reduce((sum, product) => {
+      return sum + Math.floor((product.price * product.discount) / 100);
+    }, 0);
+  }, [productOnCart]);
 
   //hàm xử lý khi người dùng chọn sản phẩm
   const handleSelectProduct = (productId, type) => {
     if (type === "select_all") {
-      setProductSelect((prev) => {
-        const newMap = new Map(prev);
-        newMap.forEach((value, key) => newMap.set(key, true)); // Đặt tất cả thành true
-        return newMap;
+      if (isAllSelected) return;
+      setProductOnCart((prev) => {
+        return prev.map((item) => ({ ...item, isSelected: true }));
       });
     } else if (type === "deselect_all") {
-      setProductSelect((prev) => {
-        const newMap = new Map(prev);
-        newMap.forEach((value, key) => newMap.set(key, false)); // Đặt tất cả thành false
-        return newMap;
+      if (isHasItemSelected) return;
+      setProductOnCart((prev) => {
+        return prev.map((item) => ({ ...item, isSelected: false }));
       });
     } else {
-      setProductSelect((prev) => {
-        const newMap = new Map(prev);
-        newMap.set(productId, !prev.get(productId)); // Đảo trạng thái sản phẩm được chọn
-        return newMap;
+      setProductOnCart((prev) => {
+        return prev.map((item) =>
+          item.id === productId
+            ? { ...item, isSelected: !item.isSelected }
+            : item
+        );
       });
     }
   };
 
-  //hàm kiểm tra xem toàn các giá trị trong map và trả về true hoặc false
-  const checkMapValue = (map, valueCheck) =>
-    [...map.values()].every((value) => value === valueCheck);
+  const isHasItemSelected = useMemo(() => {
+    return productOnCart.some((pro) => pro.isSelected);
+  }, [productOnCart]);
 
-  //hàm xử lý tăng giảm số lượng
-  const handleTurnQuantity = async (
-    productId,
-    value,
-    currentQuantity,
-    quantityInStock
-  ) => {
-    if (value === -1 && currentQuantity === 1) {
-      return;
-    }
+  const isAllSelected = useMemo(() => {
+    return productOnCart.every((pro) => pro.isSelected);
+  }, [productOnCart]);
 
-    if (value === 1 && currentQuantity >= quantityInStock) {
-      dispatch(
-        showToast({ message: "Số lượng sản phẩm trong kho không đủ!!" })
-      );
-      return;
-    }
-
-    //cập nhật ở state
-    const newProductsOfCart = productsOfCart.map((product) =>
-      product._id === productId
-        ? { ...product, quantityOnCart: product.quantityOnCart + value }
-        : product
+  const handleUpdateQuantityProduct = (productOnCartId, value) => {
+    const currentProductOnCart = productOnCart.find(
+      (p) => p.productOnCartId == productOnCartId
     );
-    setProductsOfCart(newProductsOfCart);
 
-    //cập nhật ở state của redux
-    const newCart = {
-      ...cart,
-      products: cart.products.map((product) =>
-        product.productId == productId
-          ? { ...product, quantity: product.quantity + value }
-          : product
-      ),
+    if (!currentProductOnCart) return;
+
+    const newQuantity = currentProductOnCart.quantityOnCart + value;
+    if (
+      newQuantity > currentProductOnCart.remainingProduct ||
+      newQuantity <= 0
+    ) {
+      return;
+    }
+    const payload = {
+      productOnCartId: currentProductOnCart.productOnCartId,
+      newQuantity: newQuantity,
     };
 
-    dispatch(updateCart(newCart));
-
-    //cập nhật giỏ hàng ở database
-    await updateCartOnDatabase(newCart);
-  };
-
-  //hàm xử lý khi xóa 1 sản phẩm
-  const handleDeleteProductOnCart = async (productId) => {
-    const newProductsOfCart = productsOfCart.filter(
-      (product) => product._id !== productId
-    );
-
-    //cập nhật lại state
-
-    setProductsOfCart(newProductsOfCart);
-
-    const newProductsOfCartOnDatabase = cart.products.filter(
-      (product) => product.productId !== productId
-    );
-
-    //cập nhật lại state ở redux
-    const newCart = { ...cart, products: newProductsOfCartOnDatabase };
-
-    dispatch(updateCart(newCart));
-
-    //cập nhật lại giỏ hàng ở database
-    await updateCartOnDatabase(newCart);
+    mtUpdateProductOnCart(payload);
   };
 
   //hàm xử lý bật tắt trang order
@@ -226,32 +99,15 @@ const Cart = () => {
     }
   };
 
-  //hàm xử lý cập nhật lại giỏ hàng ở redux
-  const updateCartOnRedux = (newCart) => {
-    dispatch(updateCart(newCart));
-  };
-
-  //hàm cập nhật lại danh sách sản phẩm có trong giỏ hàng
-  const handleUpdateProductsOfCart = (productIds) => {
-    const newProductsOfCart = [...productsOfCart].filter((product) =>
-      productIds.includes(product.productId)
-    );
-
-    setProductsOfCart(newProductsOfCart);
-  };
-
-  if (isLoading && productsOfCart.length === 0) return <Loader />;
+  if (pendingGetCartData) return <Loader />;
 
   if (isOrder)
     return (
       <OrderPage
-        userLogged={userLogged}
-        productsOnOrderPage={productsOfCart.filter((product) =>
-          productsSelect.get(product._id)
+        productsOnOrderPage={productOnCart.filter(
+          (product) => product.isSelected
         )}
         handleTurnOrderPage={handleTurnOrderPage}
-        updateCartOnRedux={updateCartOnRedux}
-        handleUpdateProductsOfCart={handleUpdateProductsOfCart}
       />
     );
 
@@ -260,34 +116,30 @@ const Cart = () => {
       <Toast />
       <div className="title_36">Cart</div>
       <div className="products_of_cart">
-        {productsOfCart.length === 0 && (
+        {productOnCart?.length === 0 && (
           <p className="desc">Chưa có sản phẩm nào</p>
         )}
-        {productsOfCart.length > 0 && (
+        {productOnCart?.length > 0 && (
           <div className="select_all">
             <button
-              className={`btn_dark_pink ${
-                checkMapValue(productsSelect, true) ? "active" : ""
-              }`}
+              className={`btn_dark_pink ${isAllSelected ? "active" : ""}`}
               onClick={() => handleSelectProduct("", "select_all")}
             >
               Select All
             </button>
             <button
-              className={`btn_dark_pink ${
-                checkMapValue(productsSelect, false) ? "active" : ""
-              }`}
+              className={`btn_dark_pink ${!isHasItemSelected ? "active" : ""}`}
               onClick={() => handleSelectProduct("", "deselect_all")}
             >
               Deselect All
             </button>
           </div>
         )}
-        {productsOfCart.length > 0 &&
-          productsOfCart.map((product) => (
-            <div className="box_product" key={product._id}>
+        {productOnCart?.length > 0 &&
+          productOnCart?.map((product) => (
+            <div className="box_product" key={product.id}>
               <div className="box_image">
-                <img src={product.imageDefault.url} alt="" />
+                <img src={product.imageDefault} alt="" />
               </div>
 
               <div className="content">
@@ -314,13 +166,12 @@ const Cart = () => {
                   <div className="box_quantity">
                     <div
                       className="icon desc"
-                      onClick={() =>
-                        handleTurnQuantity(
-                          product._id,
-                          -1,
-                          product.quantityOnCart
-                        )
-                      }
+                      onClick={() => {
+                        handleUpdateQuantityProduct(
+                          product.productOnCartId,
+                          -1
+                        );
+                      }}
                     >
                       -
                     </div>
@@ -329,14 +180,9 @@ const Cart = () => {
                     </div>
                     <div
                       className="icon desc"
-                      onClick={() =>
-                        handleTurnQuantity(
-                          product._id,
-                          1,
-                          product.quantityOnCart,
-                          product[product.colorOnCart + "Quantity"]
-                        )
-                      }
+                      onClick={() => {
+                        handleUpdateQuantityProduct(product.productOnCartId, 1);
+                      }}
                     >
                       +
                     </div>
@@ -353,13 +199,15 @@ const Cart = () => {
               <div className="input_select">
                 <input
                   type="checkbox"
-                  onChange={() => handleSelectProduct(product._id)}
-                  checked={productsSelect.get(product._id)}
+                  onChange={() => handleSelectProduct(product?.id)}
+                  checked={product.isSelected}
                 />
               </div>
               <div
                 className="delete icon"
-                onClick={() => handleDeleteProductOnCart(product._id)}
+                onClick={() => {
+                  mtRemoveProductFromCart(product.productOnCartId);
+                }}
               >
                 <i className="fa-solid fa-trash-can"></i>
               </div>

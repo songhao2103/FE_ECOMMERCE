@@ -8,24 +8,19 @@ import PopupInfoUserAtOrder from "../popup-info-user-at-order/PopupInfoUserAtOrd
 import Toast from "../../../utils-component/toast/Toast";
 import { showToast } from "../../../redux-toolkit/redux-slice/toastSlice";
 
-const OrderPage = ({
-  productsOnOrderPage,
-  userLogged,
-  handleTurnOrderPage,
-  updateCartOnRedux,
-  handleUpdateProductsOfCart,
-}) => {
+const OrderPage = ({ productsOnOrderPage, handleTurnOrderPage }) => {
   const [ordersList, setOrdersList] = useState([]);
   const [turnPopup, setTurnPopup] = useState(false);
   const dispatch = useDispatch();
 
+  console.log(productsOnOrderPage);
   const [currentOrderAddress, setCurrentOrderAddress] = useState({
-    userName: userLogged.userName,
-    phoneNumber: userLogged.phoneNumber || "",
-    cityOrProvince: userLogged.address?.cityOrProvince || "",
-    district: userLogged.address?.district || "",
-    wardOrCommune: userLogged.address?.wardOrCommune || "",
-    specificAddress: userLogged.address?.specific || "",
+    // userName: userLogged.userName,
+    // phoneNumber: userLogged.phoneNumber || "",
+    // cityOrProvince: userLogged.address?.cityOrProvince || "",
+    // district: userLogged.address?.district || "",
+    // wardOrCommune: userLogged.address?.wardOrCommune || "",
+    // specificAddress: userLogged.address?.specific || "",
   });
 
   const [paymentOrder, setPaymentOrder] = useState("derect_payment");

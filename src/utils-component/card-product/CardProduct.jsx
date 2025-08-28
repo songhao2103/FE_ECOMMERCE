@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { formatCurrencyVND } from "../../utils/format/format";
+import PropTypes from "prop-types";
 
 const CardProduct = ({ product, value }) => {
   if (!product) return "...";
@@ -7,8 +8,8 @@ const CardProduct = ({ product, value }) => {
   return (
     <div className="card_product">
       <div className="box_image">
-        <Link to={`/product-detail/${product._id}`} className="image">
-          <img src={product.images[0].url} alt="" />
+        <Link to={`/product-detail/${product.id}`} className="image">
+          <img src={product.imageDefault} alt="" />
         </Link>
         <p className="sale desc">{`-${product.discount}%`}</p>
 
@@ -55,3 +56,8 @@ const CardProduct = ({ product, value }) => {
 };
 
 export default CardProduct;
+
+CardProduct.propTypes = {
+  product: PropTypes.object.isRequired, // hoặc PropTypes.shape({ ... })
+  value: PropTypes.any,
+};

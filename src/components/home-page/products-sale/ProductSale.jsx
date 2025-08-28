@@ -1,12 +1,11 @@
-import { useEffect, useState, useRef } from "react";
-import baseUrl from "../../../config/baseUrl";
+import { useEffect, useRef, useState } from "react";
+import { useGetProductList } from "../../../services/queries/product.queries";
 import CardProduct from "../../../utils-component/card-product/CardProduct";
 
-const deadline = new Date("2025-06-15T00:00:00").getTime();
+const deadline = new Date("2025-10-15T00:00:00").getTime();
 const formatNumber = (value) => (value < 10 ? `0${value}` : value);
 
 const ProductSale = () => {
-  const [productsSale, setProductsSale] = useState([]);
   const [currentTransform, setCurrentTransform] = useState(0);
   const listProductElement = useRef(null);
   const boxElement = useRef(null);
@@ -16,6 +15,12 @@ const ProductSale = () => {
     hours: "",
     minutes: "",
     seconds: "",
+  });
+
+  const { data: productsData } = useGetProductList({
+    IsSale: true,
+    pageIndex: 1,
+    pageSize: 1000,
   });
 
   useEffect(() => {
@@ -44,32 +49,6 @@ const ProductSale = () => {
     return () => clearInterval(intervalShowTime);
   }, []);
 
-  useEffect(() => {
-    const fetchProductsSale = async () => {
-      try {
-        const response = await fetch(baseUrl + "/product/products-sale");
-
-        if (!response.ok) {
-          throw new Error(
-            "Error when getting the list of products being sale!! " +
-              response.status
-          );
-        }
-
-        const data = await response.json();
-
-        setProductsSale(data);
-      } catch (error) {
-        console.log(
-          "Error when getting the list of products being sale!!! " +
-            error.message
-        );
-      }
-    };
-
-    fetchProductsSale();
-  }, []);
-
   //hàm xử lý khi click chuyển trang
   const handleTurnPageProduct = (value) => {
     if (
@@ -77,8 +56,6 @@ const ProductSale = () => {
       (value === 1 && currentTransform === 2)
     )
       return;
-
-    console.log(value, currentTransform);
 
     setCurrentTransform((prevCurrent) => prevCurrent + value);
   };
@@ -91,6 +68,7 @@ const ProductSale = () => {
       currentTransform * elementWidth
     }px)`;
   }, [currentTransform]);
+
   return (
     <div className="product_sale">
       <div className="header_section">
@@ -138,7 +116,11 @@ const ProductSale = () => {
             <i className="fa-solid fa-arrow-left"></i>
           </div>
           <div
-            className={`icon ${currentTransform === 2 ? "no_drop" : ""}`}
+            className={`icon ${
+              currentTransform === Math.ceil(productsData?.totalCount / 4)
+                ? "no_drop"
+                : ""
+            }`}
             onClick={() => handleTurnPageProduct(1)}
           >
             <i className="fa-solid fa-arrow-right"></i>
@@ -149,7 +131,7 @@ const ProductSale = () => {
       {/* =========================================================== */}
       <div className="box_list_product_sale" ref={boxElement}>
         <div className="list_product_sale" ref={listProductElement}>
-          {productsSale.map((product) => (
+          {productsData?.items.map((product) => (
             <CardProduct key={product._id} product={product} />
           ))}
         </div>

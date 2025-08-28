@@ -1,74 +1,29 @@
 import { useEffect, useRef, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { formatCurrencyVND } from "../../utils/format/format";
-import baseUrl from "../../config/baseUrl";
-import fetchWithAuth from "../../utils/tokenApi/fetchWithAuth";
-import refreshToken from "../../utils/tokenApi/refreshToken";
+import { useGetProductDetail } from "../../services/queries/product.queries";
 import Loader from "../../utils-component/loader/Loader";
-import { showToast } from "../../redux-toolkit/redux-slice/toastSlice";
-import Toast from "../../utils-component/toast/Toast";
-import { showPopupAlert } from "../../redux-toolkit/redux-slice/popupAlertSlice";
 import PopupAlert from "../../utils-component/popupAlert/PopupAlert";
-import { updateCart } from "../../redux-toolkit/redux-slice/userLogged";
+import Toast from "../../utils-component/toast/Toast";
+import { formatCurrencyVND } from "../../utils/format/format";
+import { useDispatch } from "react-redux";
+import { showToast } from "../../redux-toolkit/redux-slice/toastSlice";
+import { useAddProductToCart } from "../../services/queries/cart.queries";
 
 const ProductDetail = () => {
   const dispatch = useDispatch();
-  const userLogged =
-    useSelector((state) => state.userLoggedSlice.userLogged) || null; //lấy thông tin người dùng đang đăng nhập từ store
-  const [product, setProduct] = useState(null); //Lưu thông tin sản phẩm đang được hiển thị
-  const [currentImage, setCurrentImage] = useState(null); //Lưu vị trí của ảnh đang được xem
+  const [currentImage, setCurrentImage] = useState(0); //Lưu vị trí của ảnh đang được xem
   const [listImages, setListImages] = useState([]); //Lưu danh sách ảnh của sản phẩm
-  const [isLoading, setIsLoading] = useState(true); //lưu trạng thái loading
   const listImagesElement = useRef(null);
-  const [infoProductOnPage, setInfoProductOnPage] = useState({});
+  const [productSelected, setProductSelected] = useState({
+    quantitySelected: 1,
+    totalQuantity: 1,
+    colorSelectedId: 0,
+  });
   const { productId } = useParams();
-  const cart = useSelector((state) => state.userLoggedSlice.cart);
 
-  //Lấy thông tin sản phẩm
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchProductDetail = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          baseUrl + "/product/product-detail/" + productId
-        );
-
-        if (!response.ok) {
-          throw new Error("Get defective product detail information!!!");
-        }
-
-        const data = await response.json();
-
-        if (isMounted) {
-          setProduct(data);
-          setCurrentImage(0);
-          setListImages(data.images);
-          setInfoProductOnPage({
-            productColor: data.images[0].color,
-            quantity: 1,
-            productId: data._id,
-            userId: userLogged ? userLogged._id : null,
-          });
-        }
-      } catch (error) {
-        console.log(
-          "Get defective product detail information!!!" + error.message
-        );
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-
-    fetchProductDetail();
-    console.log(product);
-
-    return () => {
-      isMounted = false;
-    };
-  }, [productId]);
+  const { data: productDetail, isPending: pendingGetDetail } =
+    useGetProductDetail(productId);
+  const { mutate: mtAddProductToCart } = useAddProductToCart();
 
   //hàm xử lý khi click chuyển ảnh sản phẩm
   const handleTurnImage = (value) => {
@@ -87,104 +42,65 @@ const ProductDetail = () => {
   };
 
   //hàm xử lý khi người dùng chọn màu sắc của sản phẩm
-  const handleSelectColor = (color) => {
-    setInfoProductOnPage({ ...infoProductOnPage, productColor: color });
-    const index = listImages.findIndex((image) => image.color === color);
-    if (index !== -1) setCurrentImage(index);
+  const handleSelectColor = (id) => {
+    const currentImage = listImages.find((image) => image.id == id);
+    setProductSelected({
+      ...productSelected,
+      totalQuantity: currentImage.quantity || 1,
+      colorSelectedId: id,
+      quantitySelected:
+        productSelected.quantitySelected > currentImage.quantity
+          ? currentImage.quantity
+          : productSelected.quantitySelected,
+    });
   };
+
+  useEffect(() => {
+    if (productDetail?.images) {
+      setListImages(productDetail.images);
+
+      const imageHasColor = productDetail.images.find((image) =>
+        Boolean(image.colorCode)
+      );
+      setProductSelected({
+        quantitySelected: 1,
+        totalQuantity: imageHasColor.quantity,
+        colorSelectedId: imageHasColor.id,
+      });
+    }
+  }, [productDetail]);
 
   //hàm xử lý thay đổi số lượng sản phẩm
   const handleChangeQuantityProduct = (value) => {
     // Nếu đang giảm và số lượng đang là 1 thì không làm gì
-    if (infoProductOnPage.quantity === 1 && value === -1) return;
-
+    if (productSelected.quantitySelected === 1 && value === -1) return;
     // Nếu tăng số lượng nhưng đã đạt giới hạn trong kho
     if (
-      value === 1 &&
-      infoProductOnPage.quantity >=
-        product[infoProductOnPage.productColor + "Quantity"]
+      value == 1 &&
+      productSelected.quantitySelected + value > productSelected.totalQuantity
     ) {
       dispatch(
         showToast({ message: "Số lượng sản phẩm trong kho không đủ!!!" })
       );
       return;
     }
-
     // Nếu các điều kiện đều ổn thì cập nhật state
-    setInfoProductOnPage((prev) => ({
+    setProductSelected((prev) => ({
       ...prev,
-      quantity: prev.quantity + value,
+      quantitySelected: prev.quantitySelected + value,
     }));
   };
 
-  //hàm xử lý khi thêm sản phẩm vào giỏ hàng
-  const handleAddProductToCart = async () => {
-    //kiểm tra xem người dùng đã đăng nhập nay chưa
-    if (!userLogged) {
-      dispatch(
-        showPopupAlert({
-          message: "Bạn chưa đăng nhập, chuyển đến trang đăng nhập?",
-          endpoint: "/log-in",
-        })
-      );
-    } else {
-      if (cart?.products?.length === 0) {
-        //kiểm tra trùng lặp
-        const isDuplicate = cart.products.find(
-          (productOnCart) => productOnCart.productId === product._id
-        );
+  const handleAddProductToCart = () => {
+    const payload = {
+      quantityImageId: productSelected.colorSelectedId,
+      quantity: productSelected.quantitySelected,
+    };
 
-        if (isDuplicate) {
-          dispatch(showToast({ message: "Sản phẩm đã có trong giỏ hàng!!" }));
-          return;
-        }
-      }
-
-      //nếu đã đăng nhập gọi API để thêm sản phẩm vào giỏ hàng
-      try {
-        setIsLoading(true);
-
-        let response = await fetchWithAuth(
-          baseUrl + "/cart/add-product-to-cart",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(infoProductOnPage),
-          }
-        );
-
-        if (response.status === 403) {
-          await refreshToken();
-        }
-
-        response = await fetchWithAuth(baseUrl + "/cart/add-product-to-cart", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(infoProductOnPage),
-        });
-
-        const data = await response.json();
-
-        dispatch(
-          showToast({
-            message: data.message,
-          })
-        );
-
-        dispatch(updateCart(data.cart));
-      } catch (error) {
-        console.log("Tạo mới store không thành công", error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
+    mtAddProductToCart(payload);
   };
 
-  if (isLoading) return <Loader />;
+  if (pendingGetDetail) return <Loader />;
 
   return (
     <div className="product_detail">
@@ -201,7 +117,7 @@ const ProductDetail = () => {
               <i className="fa-solid fa-chevron-left"></i>
             </div>
 
-            <img src={listImages[currentImage].url} alt="" />
+            <img src={listImages[currentImage]?.url} alt="" />
 
             <div
               className={
@@ -215,13 +131,15 @@ const ProductDetail = () => {
 
           <div className="box_list_images">
             <div className="list_images" ref={listImagesElement}>
-              {listImages.map((image, index) => (
+              {listImages?.map((image, index) => (
                 <img
                   src={image.url}
                   alt=""
                   key={image.url}
                   className={
-                    listImages[currentImage].url === image.url ? "active" : null
+                    listImages[currentImage]?.url === image?.url
+                      ? "active"
+                      : null
                   }
                   onClick={() => handleTurnImage(index)}
                 />
@@ -231,7 +149,7 @@ const ProductDetail = () => {
         </div>
 
         <div className="product_info">
-          <p className="title_24">{product.productName}</p>
+          <p className="title_24">{productDetail?.productName}</p>
 
           <div className="rating">
             <div className="icon">
@@ -246,39 +164,44 @@ const ProductDetail = () => {
           <div className="box_price">
             <p className="new_price desc">
               {formatCurrencyVND(
-                ((100 - product.discount) * product.price) / 100
+                ((100 - productDetail?.discount) * productDetail?.price) / 100
               )}
             </p>
-            {product.discount > 0 && (
+            {productDetail?.discount > 0 && (
               <p className="old_price desc">
-                {formatCurrencyVND(product.price)}
+                {formatCurrencyVND(productDetail?.price)}
               </p>
             )}
           </div>
 
-          <p className="desc describe">{product.describe}</p>
+          <p className="desc describe">{productDetail?.describe}</p>
 
           <div className="colors">
             <p className="desc">Colours:</p>
-            {product.images.map(
-              (item) =>
-                item.color && (
+            {listImages?.map((item) => {
+              if (item.colorCode) {
+                const colorCode = item.colorCode.startsWith("#")
+                  ? item.colorCode
+                  : "#" + item.colorCode;
+
+                return (
                   <div
                     key={item.url}
                     className={`item ${
-                      infoProductOnPage.productColor === item.color
+                      productSelected.colorSelectedId === item.id
                         ? "active"
                         : ""
                     }`}
-                    onClick={() => handleSelectColor(item.color)}
+                    onClick={() => handleSelectColor(item.id)}
                   >
                     <div
                       className="color"
-                      style={{ backgroundColor: item.color }}
+                      style={{ backgroundColor: colorCode }}
                     ></div>
                   </div>
-                )
-            )}
+                );
+              }
+            })}
           </div>
 
           <div className="box_order">
@@ -289,7 +212,9 @@ const ProductDetail = () => {
               >
                 -
               </div>
-              <div className="item desc">{infoProductOnPage.quantity}</div>
+              <div className="item desc">
+                {productSelected.quantitySelected}
+              </div>
               <div
                 className="item desc"
                 onClick={() => handleChangeQuantityProduct(1)}

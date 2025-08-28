@@ -1,15 +1,11 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import media from "/media_images/login_and_register_media.png";
-import baseUrl from "../../config/baseUrl";
-import { updateUserLogged } from "../../redux-toolkit/redux-slice/userLogged";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { useLogin } from "../../services/queries/auth.queries";
 import Loader from "../../utils-component/loader/Loader";
-import { Link, useNavigate } from "react-router-dom";
+import media from "/media_images/login_and_register_media.png";
 
 const LogIn = () => {
-  //=====================State================================================================
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const status = useSelector((state) => state.statusGlobalSlice.status);
   const [hiddenPassword, setHiddenPassword] = useState(false); //Lưu trạng thái hiện thị giá trị của các ô input có type là password
 
@@ -27,6 +23,8 @@ const LogIn = () => {
 
   //lưu giá trị của ô input checkbox
   const [inputCheckbox, setInputCheckbox] = useState(false);
+
+  const { mutate: mtLogin } = useLogin();
 
   // ========================Handler========================================================================
   //hàm xử lý hiển thị giá trị các ô input có type là password
@@ -65,40 +63,7 @@ const LogIn = () => {
     setErrors(newErrors);
 
     if (!newErrors.password && !newErrors.email) {
-      try {
-        const response = await fetch(baseUrl + "/login", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-          credentials: "include", // Quan trọng
-        });
-
-        // if (!response.ok) {
-        //   throw new Error("Lỗi khi gọi API đăng ký " + response.message);
-        // }
-
-        const data = await response.json();
-
-        //kiểm tra đăng nhập thành công
-        if (!data.success) {
-          setErrors(data.errors);
-        } else {
-          // setFormData({ email: "", password: "" });
-
-          //cập nhật accessToken lên localStorage
-          localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
-
-          // gọi action để cập nhật userLogged ở store của redux
-          dispatch(updateUserLogged(data));
-
-          //Chuyển đến trang đăng nhập
-          navigate("/");
-        }
-      } catch (error) {
-        console.error("Lỗi khi gửi API đăng ký " + error.message);
-      }
+      mtLogin(formData);
     }
   };
 

@@ -1,25 +1,24 @@
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import urlAvatarDefault from "../../../config/avatarDefault";
-import { updateUserLogged } from "../../../redux-toolkit/redux-slice/userLogged";
+import { useDispatch } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 import PopupSearchHomePage from "../../../components/popup-search-home-page/PopupSearchHomePage";
-import { useDebounce } from "../../../utils/custom-hook/customHook";
+import urlAvatarDefault from "../../../config/avatarDefault";
 import { updateSearchValue } from "../../../redux-toolkit/redux-slice/searchSlice";
+import { useLogout } from "../../../services/queries/auth.queries";
+import { useDebounce } from "../../../utils/custom-hook/customHook";
+import { useGetUserLogged } from "../../../utils/custom-hook/useGetUserLogged";
+import { useGetQuantityOnCart } from "../../../services/queries/cart.queries";
 
 const BoxRight = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userLogged = useSelector((state) =>
-    state.userLoggedSlice.userLogged ? state.userLoggedSlice.userLogged : null
-  );
-  const quantityProduct = useSelector((state) =>
-    state.userLoggedSlice.cart
-      ? state.userLoggedSlice.cart?.products?.length
-      : null
-  );
+  const location = useLocation();
+  const userLogged = useGetUserLogged(location.pathname);
+  const { mutate: mtLogout } = useLogout();
   const [valueSearch, setValueSearch] = useState(""); //lưu giá trị của ô input search
   const debouncedValueSearch = useDebounce(valueSearch, 2000);
+  const { data: quantityOnCart } = useGetQuantityOnCart();
+  console.log(quantityOnCart);
 
   const path = useLocation().pathname;
   const [hiddenPopup, setHiddenPopup] = useState(false);
@@ -41,17 +40,7 @@ const BoxRight = () => {
 
   //hàm xử lý lhi người dùng log out
   const handleLogOut = () => {
-    //xóa access token ở local
-    localStorage.removeItem("accessToken");
-
-    //xóa refresh token ở cookie
-    document.cookie =
-      "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-
-    //cập nhật lại userLogged thành emtry Object
-    dispatch(updateUserLogged({ cart: null, user: null }));
-
-    //chuyển đến trang đăng nhập
+    mtLogout();
     navigate("/log-in");
   };
 
@@ -147,8 +136,8 @@ const BoxRight = () => {
           </div>
           <div className="icon cart" onClick={handleClickCartIcon}>
             <i className="fa-solid fa-cart-shopping"></i>
-            {quantityProduct > 0 && (
-              <p className="desc quantity">{quantityProduct}</p>
+            {quantityOnCart && quantityOnCart > 0 && (
+              <p className="desc quantity">{quantityOnCart}</p>
             )}
           </div>
         </div>
@@ -219,9 +208,9 @@ const BoxRight = () => {
             </ul>
           </div>
         ) : (
-          <Link to={"/log-in"} className="box_right_log_in">
+          <div className="box_right_log_in" onClick={handleLogOut}>
             <p className="desc">Log In</p>
-          </Link>
+          </div>
         ))}
     </div>
   );

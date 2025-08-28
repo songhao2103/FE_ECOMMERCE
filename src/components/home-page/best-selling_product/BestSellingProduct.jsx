@@ -1,35 +1,13 @@
-import { useEffect, useState } from "react";
-import baseUrl from "../../../config/baseUrl";
+import { useGetProductList } from "../../../services/queries/product.queries";
 import CardProduct from "../../../utils-component/card-product/CardProduct";
 
 const BestSellingProduct = () => {
-  const [productsSelling, setProductsSelling] = useState([]);
-
-  useEffect(() => {
-    const fetchProductsSale = async () => {
-      try {
-        const response = await fetch(baseUrl + "/product/product-selling");
-
-        if (!response.ok) {
-          throw new Error(
-            "Error when getting the list of products being sale!! " +
-              response.status
-          );
-        }
-
-        const data = await response.json();
-
-        setProductsSelling(data);
-      } catch (error) {
-        console.log(
-          "Error when getting the list of products being sale!!! " +
-            error.message
-        );
-      }
-    };
-
-    fetchProductsSale();
-  }, []);
+  const { data: productBestSellingData } = useGetProductList({
+    pageIndex: 1,
+    pageSize: 4,
+    sortType: -1,
+    sortField: 3,
+  });
 
   return (
     <div className="product_selling">
@@ -43,8 +21,8 @@ const BestSellingProduct = () => {
       {/* =========================================================== */}
       <div className="box_list_product_selling">
         <div className="list_product_selling">
-          {productsSelling.map((product) => (
-            <CardProduct key={product._id} product={product} value={true} />
+          {productBestSellingData?.items?.map((product) => (
+            <CardProduct key={product.id} product={product} value={true} />
           ))}
         </div>
       </div>
